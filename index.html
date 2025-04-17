@@ -36,7 +36,6 @@
       visibility: visible;
       opacity: 1;
     }
-    .score { font-weight: bold; color: #006600; margin-top: 10px; }
   </style>
 </head>
 <body>
@@ -47,7 +46,6 @@
   <div id="policy-buttons"></div>
   <button onclick="nextRound()">Nästa Runda</button>
   <button onclick="restartGame()">Starta Om Spelet</button>
-  <div class="score" id="score-display"></div>
 
   <div class="status">
     <h2>Status - Intressenter</h2>
@@ -55,8 +53,6 @@
     <div class="log">
       <h3>Genomförda beslut:</h3>
       <ul id="actions"></ul>
-      <h3>Händelser:</h3>
-      <ul id="event-log"></ul>
     </div>
   </div>
 
@@ -66,7 +62,6 @@
     const maxSatisfaction = 100;
     const minSatisfaction = 1;
     let gameOver = false;
-    let round = 1;
     let stagedEffects = {};
     let delayedEffects = [];
 
@@ -139,13 +134,7 @@
     }
 
     function updateBudgetDisplay() {
-      document.getElementById("budget-display").textContent = `Budget kvar: ${budget.toLocaleString()} kr (Runda ${round}/10)`;
-    }
-
-    function updateScoreDisplay() {
-      const score = Object.values(stakeholders).reduce((sum, val) => sum + val, 0);
-      document.getElementById("score-display").textContent = `Poäng denna runda: ${score}`;
-      return score;
+      document.getElementById("budget-display").textContent = `Budget kvar: ${budget.toLocaleString()} kr`;
     }
 
     function checkGameOver() {
@@ -156,13 +145,6 @@
           document.querySelectorAll("button").forEach(btn => btn.disabled = true);
           return true;
         }
-      }
-      if (round > 10) {
-        const finalScore = updateScoreDisplay();
-        alert(`Spelet är slut! Din slutpoäng är ${finalScore}`);
-        gameOver = true;
-        document.querySelectorAll("button").forEach(btn => btn.disabled = true);
-        return true;
       }
       return false;
     }
@@ -193,23 +175,6 @@
       updateBudgetDisplay();
     }
 
-    function triggerRandomEvent() {
-      const events = [
-        { name: "Dataintrång upptäckt", effects: { "Integritetsförespråkare": -5 } },
-        { name: "AI-lag godkänd", effects: { "Teknikföretag": +10, "Traditionalister": -5 } },
-        { name: "Virusutbrott", effects: { "Vårdpersonal": -10, "Patienter": -5 } }
-      ];
-      if (Math.random() < 0.25) {
-        const event = events[Math.floor(Math.random() * events.length)];
-        for (const group in event.effects) {
-          stakeholders[group] = Math.min(maxSatisfaction, Math.max(minSatisfaction, (stakeholders[group] || 50) + event.effects[group]));
-        }
-        const log = document.createElement("li");
-        log.textContent = `Händelse: ${event.name}`;
-        document.getElementById("event-log").appendChild(log);
-      }
-    }
-
     function nextRound() {
       if (gameOver) return;
 
@@ -227,19 +192,14 @@
 
       budget = initialBudget;
       document.getElementById("actions").innerHTML = "";
-      triggerRandomEvent();
       renderStakeholders();
       updateBudgetDisplay();
-      updateScoreDisplay();
-
-      round++;
       checkGameOver();
     }
 
     function restartGame() {
       budget = initialBudget;
       gameOver = false;
-      round = 1;
       for (const group in stakeholders) {
         stakeholders[group] = 50;
       }
@@ -247,8 +207,6 @@
       delayedEffects = [];
       document.querySelectorAll("button").forEach(btn => btn.disabled = false);
       document.getElementById("actions").innerHTML = "";
-      document.getElementById("event-log").innerHTML = "";
-      document.getElementById("score-display").textContent = "";
       renderStakeholders();
       updateBudgetDisplay();
     }
@@ -267,12 +225,27 @@
         const tooltip = document.createElement("span");
         tooltip.className = "tooltiptext";
 
-        const allEffects = { ...policy.effects, ...(policy.delayed || {}) };
-        tooltip.innerHTML = Object.keys(allEffects).map(group => {
-          const value = allEffects[group];
-          const sign = value > 0 ? "+" : "";
-          return `<strong>${group}</strong>: ${sign}${value}`;
-        }).join("<br>");
+        let tooltipLines = [];
+
+        // Direkta effekter
+        if (policy.effects) {
+          for (const group in policy.effects) {
+            const value = policy.effects[group];
+            const sign = value > 0 ? "+" : "";
+            tooltipLines.push(`<strong>${group}</strong>: ${sign}${value}`);
+          }
+        }
+
+        // Fördröjda effekter
+        if (policy.delayed) {
+          for (const group in policy.delayed) {
+            const value = policy.delayed[group];
+            const sign = value > 0 ? "+" : "";
+            tooltipLines.push(`<strong>${group}</strong>: ${sign}${value} <em>(fördröjd)</em>`);
+          }
+        }
+
+        tooltip.innerHTML = tooltipLines.join("<br>");
 
         btnWrapper.appendChild(btn);
         btnWrapper.appendChild(tooltip);
