@@ -25,7 +25,7 @@
       padding: 8px;
       position: absolute;
       z-index: 1;
-      bottom: 125%; 
+      bottom: 125%;
       left: 50%;
       margin-left: -125px;
       opacity: 0;
@@ -50,6 +50,10 @@
   <div class="status">
     <h2>Status - Intressenter</h2>
     <div id="stakeholders"></div>
+
+    <h2>Individer</h2>
+    <div id="people"></div>
+
     <div class="log">
       <h3>Genomförda beslut:</h3>
       <ul id="actions"></ul>
@@ -60,64 +64,87 @@
     const initialBudget = 100000;
     let budget = initialBudget;
     const maxSatisfaction = 100;
-    const minSatisfaction = 1;
+    const minSatisfaction = 0;
     let gameOver = false;
     let stagedEffects = {};
     let delayedEffects = [];
 
-    const stakeholders = {
-      "Patienter": 50,
-      "Äldre": 50,
-      "Vårdpersonal": 50,
-      "Teknikföretag": 50,
-      "Integritetsförespråkare": 50,
-      "Sjukhusadministration": 50,
-      "Försäkringsbolag": 50,
-      "Digitala utvecklare": 50,
-      "Funktionsrättsorganisationer": 50,
-      "Migranter": 50,
-      "Traditionalister": 50,
-      "Fackföreningar": 50
-    };
+    const stakeholderNames = [
+      "Äldre", "Unga", "Vårdpersonal", "Teknikföretag",
+      "Integritetsförespråkare", "Sjukhusadministration", "Försäkringsbolag",
+      "Digitala utvecklare", "Funktionsrättsorganisationer", "Migranter",
+      "Traditionalister", "Fackföreningar"
+    ];
+
+    let stakeholders = {};
+    stakeholderNames.forEach(name => stakeholders[name] = 50);
+
+    const firstNames = ["Anna", "Erik", "Sara", "Lukas", "Maja", "Oskar", "Nina", "Ali", "Elsa", "Johan"];
+    let people = [];
+
+    function generatePeople() {
+  const personGroupMap = [
+    ["Äldre", "Traditionalister"],
+    ["Unga", "Teknikföretag", "Digitala utvecklare"],
+    ["Unga", "Migranter", "Funktionsrättsorganisationer"],
+    ["Äldre","Vårdpersonal", "Fackföreningar", "Sjukhusadministration"],
+    ["Unga", "Försäkringsbolag", "Digitala utvecklare"],
+    ["Äldre", "Integritetsförespråkare", "Traditionalister"],
+    ["Vårdpersonal", "Sjukhusadministration"],
+    ["Migranter", "Funktionsrättsorganisationer", "Integritetsförespråkare"],
+    ["Unga", "Teknikföretag", "Försäkringsbolag"],
+    ["Äldre", "Traditionalister", "Fackföreningar"]
+  ];
+
+  people = [];
+  for (let i = 0; i < 10; i++) {
+    people.push({
+      name: firstNames[i],
+      groups: personGroupMap[i],
+      satisfaction: 50
+    });
+  }
+}
+
 
     const policies = [
       {
         key: "bankid",
         name: "Obligatorisk BankID",
-        cost: 10000,
-        effects: { "Patienter": -5, "Äldre": -15, "Teknikföretag": +10, "Migranter": -10 },
+        cost: 20000,
+        effects: { "Äldre": -15, "Teknikföretag": +10, "Migranter": -10, "Unga": +10, "Traditionalister": -5 },
         delayed: { "Integritetsförespråkare": -5 }
       },
       {
         key: "chatbot",
         name: "Gratis AI-chattbotar",
         cost: 15000,
-        effects: { "Patienter": +5, "Äldre": -5, "Teknikföretag": +10, "Integritetsförespråkare": -10 },
+        effects: { "Äldre": -5, "Teknikföretag": +10, "Integritetsförespråkare": -10, "Unga": +7 },
         delayed: { "Vårdpersonal": -5 }
       },
       {
         key: "paper",
         name: "Garantera pappersbaserad vård",
-        cost: 8000,
-        effects: { "Äldre": +20, "Traditionalister": +10, "Teknikföretag": -10 }
+        cost: 25000,
+        effects: { "Äldre": +15, "Traditionalister": +10, "Teknikföretag": -10, "Unga": -6 }
       },
       {
         key: "ehr",
         name: "Nationellt Elektroniskt Journalsystem",
-        cost: 25000,
+        cost: 30000,
         effects: { "Sjukhusadministration": +15, "Integritetsförespråkare": -10, "Digitala utvecklare": +10 }
       },
       {
         key: "telemedicine",
         name: "Telemedicin som standard",
         cost: 20000,
-        effects: { "Patienter": +5, "Äldre": -10, "Vårdpersonal": -5, "Teknikföretag": +10 },
+        effects: { "Äldre": -10, "Vårdpersonal": -5, "Teknikföretag": +10, "Unga": +10 },
         delayed: { "Fackföreningar": -5 }
       },
       {
         key: "subsidy",
         name: "Subventionerade smarttelefoner",
-        cost: 30000,
+        cost: 40000,
         effects: { "Patienter": +10, "Migranter": +10, "Försäkringsbolag": -5 }
       }
     ];
@@ -126,27 +153,65 @@
       const div = document.getElementById("stakeholders");
       div.innerHTML = "";
       for (const group in stakeholders) {
-        const value = stakeholders[group];
         const p = document.createElement("p");
-        p.innerHTML = `<strong>${group}:</strong> ${value}`;
+        p.innerHTML = `<strong>${group}:</strong> ${stakeholders[group]}`;
         div.appendChild(p);
+      }
+    }
+
+    function renderPeople() {
+      const div = document.getElementById("people");
+      div.innerHTML = "";
+      people.forEach(person => {
+        const wrapper = document.createElement("div");
+        wrapper.className = "tooltip";
+        wrapper.innerHTML = `<strong>${person.name}:</strong> ${Math.round(person.satisfaction)} &nbsp;&nbsp;`;
+        const tooltip = document.createElement("span");
+        tooltip.className = "tooltiptext";
+        tooltip.innerHTML = `Grupper: ${person.groups.join(", ")}<br>Nöjdhet: ${Math.round(person.satisfaction)}`;
+        wrapper.appendChild(tooltip);
+        div.appendChild(wrapper);
+      });
+    }
+
+    function updatePeopleSatisfaction() {
+      for (const person of people) {
+        let total = 0;
+        for (const g of person.groups) {
+          total += stakeholders[g];
+        }
+        person.satisfaction = total / person.groups.length;
+
+        if (person.satisfaction < 25) {
+          person.satisfaction -= 3;
+        }
+
+        person.satisfaction = Math.min(maxSatisfaction, Math.max(minSatisfaction, person.satisfaction));
+      }
+    }
+
+    function checkGameOver() {
+      for (const person of people) {
+        if (person.satisfaction <= 0) {
+          alert(`Spelet är över! ${person.name} är alltför missnöjd.`);
+          gameOver = true;
+        }
+      }
+
+      for (const group in stakeholders) {
+        if (stakeholders[group] <= 0) {
+          alert(`Spelet är över! Gruppen "${group}" är alltför missnöjd.`);
+          gameOver = true;
+        }
+      }
+
+      if (gameOver) {
+        document.querySelectorAll("button").forEach(btn => btn.disabled = true);
       }
     }
 
     function updateBudgetDisplay() {
       document.getElementById("budget-display").textContent = `Budget kvar: ${budget.toLocaleString()} kr`;
-    }
-
-    function checkGameOver() {
-      for (const group in stakeholders) {
-        if (stakeholders[group] < minSatisfaction) {
-          alert(`Spelet är över! Gruppen "${group}" tappade för mycket nöjdhet.`);
-          gameOver = true;
-          document.querySelectorAll("button").forEach(btn => btn.disabled = true);
-          return true;
-        }
-      }
-      return false;
     }
 
     function applyPolicy(policyKey) {
@@ -190,24 +255,35 @@
         }
       }
 
-      budget = initialBudget;
-      document.getElementById("actions").innerHTML = "";
-      renderStakeholders();
-      updateBudgetDisplay();
+      for (const group in stakeholders) {
+        if (stakeholders[group] < 25) {
+          stakeholders[group] = Math.max(minSatisfaction, stakeholders[group] - 3);
+        }
+      }
+
+      updatePeopleSatisfaction();
       checkGameOver();
+
+      if (!gameOver) {
+        budget = initialBudget;
+        document.getElementById("actions").innerHTML = "";
+        renderStakeholders();
+        renderPeople();
+        updateBudgetDisplay();
+      }
     }
 
     function restartGame() {
       budget = initialBudget;
       gameOver = false;
-      for (const group in stakeholders) {
-        stakeholders[group] = 50;
-      }
+      stakeholderNames.forEach(name => stakeholders[name] = 50);
+      generatePeople();
       stagedEffects = {};
       delayedEffects = [];
       document.querySelectorAll("button").forEach(btn => btn.disabled = false);
       document.getElementById("actions").innerHTML = "";
       renderStakeholders();
+      renderPeople();
       updateBudgetDisplay();
     }
 
@@ -220,14 +296,15 @@
 
         const btn = document.createElement("button");
         btn.textContent = `${policy.name} (${policy.cost.toLocaleString()} kr)`;
-        btn.onclick = () => applyPolicy(policy.key);
+        btn.onclick = () => {
+          applyPolicy(policy.key);
+          checkGameOver();
+        };
 
         const tooltip = document.createElement("span");
         tooltip.className = "tooltiptext";
-
         let tooltipLines = [];
 
-        // Direkta effekter
         if (policy.effects) {
           for (const group in policy.effects) {
             const value = policy.effects[group];
@@ -236,7 +313,6 @@
           }
         }
 
-        // Fördröjda effekter
         if (policy.delayed) {
           for (const group in policy.delayed) {
             const value = policy.delayed[group];
@@ -246,15 +322,16 @@
         }
 
         tooltip.innerHTML = tooltipLines.join("<br>");
-
         btnWrapper.appendChild(btn);
         btnWrapper.appendChild(tooltip);
         container.appendChild(btnWrapper);
       });
     }
 
+    generatePeople();
     renderPolicyButtons();
     renderStakeholders();
+    renderPeople();
     updateBudgetDisplay();
   </script>
 </body>
