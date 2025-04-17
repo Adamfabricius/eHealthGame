@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+  <meta charset="UTF-8">
+  <title>eHälsa Simulationsspel</title>
+  <style>
+    body { font-family: Arial, sans-serif; background: #f0f2f5; padding: 20px; }
+    h1 { font-size: 24px; }
+    button { margin: 5px; padding: 10px 15px; font-size: 14px; }
+    .status { margin-top: 20px; background: #fff; padding: 15px; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
+    .log { margin-top: 10px; }
+    .budget { font-weight: bold; color: #333; margin-bottom: 10px; }
+    .tooltip {
+      position: relative;
+      display: inline-block;
+      cursor: pointer;
+    }
+    .tooltip .tooltiptext {
+      visibility: hidden;
+      width: 250px;
+      background-color: #333;
+      color: #fff;
+      text-align: left;
+      border-radius: 6px;
+      padding: 8px;
+      position: absolute;
+      z-index: 1;
+      bottom: 125%; 
+      left: 50%;
+      margin-left: -125px;
+      opacity: 0;
+      transition: opacity 0.3s;
+      font-size: 12px;
+    }
+    .tooltip:hover .tooltiptext {
+      visibility: visible;
+      opacity: 1;
+    }
+    .score { font-weight: bold; color: #006600; margin-top: 10px; }
+  </style>
+</head>
+<body>
+  <h1>eHälsa Simulationsspel</h1>
+  <p>Välj policybeslut, hantera budgeten och håll alla nöjdhetsnivåer över 0!</p>
+
+  <div class="budget" id="budget-display"></div>
+  <div id="policy-buttons"></div>
+  <button onclick="nextRound()">Nästa Runda</button>
+  <button onclick="restartGame()">Starta Om Spelet</button>
+  <div class="score" id="score-display"></div>
+
+  <div class="status">
+    <h2>Status - Intressenter</h2>
+    <div id="stakeholders"></div>
+    <div class="log">
+      <h3>Genomförda beslut:</h3>
+      <ul id="actions"></ul>
+      <h3>Händelser:</h3>
+      <ul id="event-log"></ul>
+    </div>
+  </div>
+
+  <script>
+    const initialBudget = 100000;
+    let budget = initialBudget;
+    const maxSatisfaction = 100;
+    const minSatisfaction = 1;
+    let gameOver = false;
+    let round = 1;
+    let stagedEffects = {};
+    let delayedEffects = [];
+
+    const stakeholders = {
+      "Patienter": 50,
+      "Äldre": 50,
+      "Vårdpersonal": 50,
+      "Teknikföretag": 50,
+      "Integritetsförespråkare": 50,
+      "Sjukhusadministration": 50,
+      "Försäkringsbolag": 50,
+      "Digitala utvecklare": 50,
+      "Funktionsrättsorganisationer": 50,
+      "Migranter": 50,
+      "Traditionalister": 50,
+      "Fackföreningar": 50
+    };
+
+    const policies = [
+      {
+        key: "bankid",
+        name: "Obligatorisk BankID",
+        cost: 10000,
+        effects: { "Patienter": -5, "Äldre": -15, "Teknikföretag": +10, "Migranter": -10 },
+        delayed: { "Integritetsförespråkare": -5 }
+      },
+      {
+        key: "chatbot",
+        name: "Gratis AI-chattbotar",
+        cost: 15000,
+        effects: { "Patienter": +5, "Äldre": -5, "Teknikföretag": +10, "Integritetsförespråkare": -10 },
+        delayed: { "Vårdpersonal": -5 }
+      },
+      {
+        key: "paper",
+        name: "Garantera pappersbaserad vård",
+        cost: 8000,
+        effects: { "Äldre": +20, "Traditionalister": +10, "Teknikföretag": -10 }
+      },
+      {
+        key: "ehr",
+        name: "Nationellt Elektroniskt Journalsystem",
+        cost: 25000,
+        effects: { "Sjukhusadministration": +15, "Integritetsförespråkare": -10, "Digitala utvecklare": +10 }
+      },
+      {
+        key: "telemedicine",
+        name: "Telemedicin som standard",
+        cost: 20000,
+        effects: { "Patienter": +5, "Äldre": -10, "Vårdpersonal": -5, "Teknikföretag": +10 },
+        delayed: { "Fackföreningar": -5 }
+      },
+      {
+        key: "subsidy",
+        name: "Subventionerade smarttelefoner",
+        cost: 30000,
+        effects: { "Patienter": +10, "Migranter": +10, "Försäkringsbolag": -5 }
+      }
+    ];
+
+    function renderStakeholders() {
+      const div = document.getElementById("stakeholders");
+      div.innerHTML = "";
+      for (const group in stakeholders) {
+        const value = stakeholders[group];
+        const p = document.createElement("p");
+        p.innerHTML = `<strong>${group}:</strong> ${value}`;
+        div.appendChild(p);
+      }
+    }
+
+    function updateBudgetDisplay() {
+      document.getElementById("budget-display").textContent = `Budget kvar: ${budget.toLocaleString()} kr (Runda ${round}/10)`;
+    }
+
+    function updateScoreDisplay() {
+      const score = Object.values(stakeholders).reduce((sum, val) => sum + val, 0);
+      document.getElementById("score-display").textContent = `Poäng denna runda: ${score}`;
+      return score;
+    }
+
+    function checkGameOver() {
+      for (const group in stakeholders) {
+        if (stakeholders[group] < minSatisfaction) {
+          alert(`Spelet är över! Gruppen "${group}" tappade för mycket nöjdhet.`);
+          gameOver = true;
+          document.querySelectorAll("button").forEach(btn => btn.disabled = true);
+          return true;
+        }
+      }
+      if (round > 10) {
+        const finalScore = updateScoreDisplay();
+        alert(`Spelet är slut! Din slutpoäng är ${finalScore}`);
+        gameOver = true;
+        document.querySelectorAll("button").forEach(btn => btn.disabled = true);
+        return true;
+      }
+      return false;
+    }
+
+    function applyPolicy(policyKey) {
+      if (gameOver) return;
+      const policy = policies.find(p => p.key === policyKey);
+
+      if (budget < policy.cost) {
+        alert("Inte tillräckligt med budget!");
+        return;
+      }
+
+      budget -= policy.cost;
+
+      for (const group in policy.effects) {
+        stagedEffects[group] = (stagedEffects[group] || 0) + policy.effects[group];
+      }
+
+      if (policy.delayed) {
+        delayedEffects.push(policy.delayed);
+      }
+
+      const li = document.createElement("li");
+      li.textContent = `Du valde: ${policy.name} (-${policy.cost.toLocaleString()} kr)`;
+      document.getElementById("actions").appendChild(li);
+
+      updateBudgetDisplay();
+    }
+
+    function triggerRandomEvent() {
+      const events = [
+        { name: "Dataintrång upptäckt", effects: { "Integritetsförespråkare": -5 } },
+        { name: "AI-lag godkänd", effects: { "Teknikföretag": +10, "Traditionalister": -5 } },
+        { name: "Virusutbrott", effects: { "Vårdpersonal": -10, "Patienter": -5 } }
+      ];
+      if (Math.random() < 0.25) {
+        const event = events[Math.floor(Math.random() * events.length)];
+        for (const group in event.effects) {
+          stakeholders[group] = Math.min(maxSatisfaction, Math.max(minSatisfaction, (stakeholders[group] || 50) + event.effects[group]));
+        }
+        const log = document.createElement("li");
+        log.textContent = `Händelse: ${event.name}`;
+        document.getElementById("event-log").appendChild(log);
+      }
+    }
+
+    function nextRound() {
+      if (gameOver) return;
+
+      for (const group in stagedEffects) {
+        stakeholders[group] = Math.min(maxSatisfaction, Math.max(minSatisfaction, stakeholders[group] + stagedEffects[group]));
+      }
+      stagedEffects = {};
+
+      if (delayedEffects.length > 0) {
+        const delayed = delayedEffects.shift();
+        for (const group in delayed) {
+          stakeholders[group] = Math.min(maxSatisfaction, Math.max(minSatisfaction, stakeholders[group] + delayed[group]));
+        }
+      }
+
+      budget = initialBudget;
+      document.getElementById("actions").innerHTML = "";
+      triggerRandomEvent();
+      renderStakeholders();
+      updateBudgetDisplay();
+      updateScoreDisplay();
+
+      round++;
+      checkGameOver();
+    }
+
+    function restartGame() {
+      budget = initialBudget;
+      gameOver = false;
+      round = 1;
+      for (const group in stakeholders) {
+        stakeholders[group] = 50;
+      }
+      stagedEffects = {};
+      delayedEffects = [];
+      document.querySelectorAll("button").forEach(btn => btn.disabled = false);
+      document.getElementById("actions").innerHTML = "";
+      document.getElementById("event-log").innerHTML = "";
+      document.getElementById("score-display").textContent = "";
+      renderStakeholders();
+      updateBudgetDisplay();
+    }
+
+    function renderPolicyButtons() {
+      const container = document.getElementById("policy-buttons");
+      container.innerHTML = "";
+      policies.forEach(policy => {
+        const btnWrapper = document.createElement("div");
+        btnWrapper.className = "tooltip";
+
+        const btn = document.createElement("button");
+        btn.textContent = `${policy.name} (${policy.cost.toLocaleString()} kr)`;
+        btn.onclick = () => applyPolicy(policy.key);
+
+        const tooltip = document.createElement("span");
+        tooltip.className = "tooltiptext";
+
+        const allEffects = { ...policy.effects, ...(policy.delayed || {}) };
+        tooltip.innerHTML = Object.keys(allEffects).map(group => {
+          const value = allEffects[group];
+          const sign = value > 0 ? "+" : "";
+          return `<strong>${group}</strong>: ${sign}${value}`;
+        }).join("<br>");
+
+        btnWrapper.appendChild(btn);
+        btnWrapper.appendChild(tooltip);
+        container.appendChild(btnWrapper);
+      });
+    }
+
+    renderPolicyButtons();
+    renderStakeholders();
+    updateBudgetDisplay();
+  </script>
+</body>
+</html>
