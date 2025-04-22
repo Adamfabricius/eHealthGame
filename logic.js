@@ -7,6 +7,7 @@ let gameOver = false;
 let stagedEffects = {};
 let delayedEffects = [];
 let activePolicies = [];
+let usedPolicyKeys = [];
 
 const stakeholderNames = [
   "Patienter", "Äldre", "Unga", "Vårdpersonal", "Teknikföretag",
@@ -133,6 +134,8 @@ function updateBudgetDisplay() {
 
 function applyPolicy(policyKey) {
   if (gameOver) return;
+  if (usedPolicyKeys.includes(policyKey)) return;
+
   const policy = policies.find(p => p.key === policyKey);
 
   if (budget < policy.cost) {
@@ -142,6 +145,7 @@ function applyPolicy(policyKey) {
 
   budget -= policy.cost;
   activePolicies.push(policy);
+  usedPolicyKeys.push(policyKey);
 
   for (const group in policy.effects) {
     stagedEffects[group] = (stagedEffects[group] || 0) + policy.effects[group];
@@ -151,7 +155,6 @@ function applyPolicy(policyKey) {
     delayedEffects.push(policy.delayed);
   }
 
-  // Disable knappen denna runda
   document.querySelector(`#btn-${policy.key}`).disabled = true;
 
   const li = document.createElement("li");
@@ -177,16 +180,8 @@ function update() {
 function nextRound() {
   if (gameOver) return;
 
-  // Lägg till ny budget
   budget += incomePerRound;
 
-  // Aktivera alla policyknappar igen
-  policies.forEach(policy => {
-    const btn = document.querySelector(`#btn-${policy.key}`);
-    if (btn) btn.disabled = false;
-  });
-
-  // Hantera delayed effects
   if (delayedEffects.length > 0) {
     const effects = delayedEffects.shift();
     for (const group in effects) {
@@ -195,7 +190,6 @@ function nextRound() {
     }
   }
 
-  // Kör effekter för alla aktiva policies varje runda
   activePolicies.forEach(policy => {
     for (const group in policy.effects) {
       stakeholders[group] += policy.effects[group];
@@ -215,6 +209,7 @@ function restartGame() {
   stagedEffects = {};
   delayedEffects = [];
   activePolicies = [];
+  usedPolicyKeys = [];
   generatePeople();
   renderPolicies();
   update();
@@ -229,6 +224,7 @@ function renderPolicies() {
     btn.textContent = `${policy.name} (${policy.cost.toLocaleString()} kr)`;
     btn.id = `btn-${policy.key}`;
     btn.onclick = () => applyPolicy(policy.key);
+    if (usedPolicyKeys.includes(policy.key)) btn.disabled = true;
     div.appendChild(btn);
   });
 }
