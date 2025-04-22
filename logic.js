@@ -81,7 +81,7 @@ function renderStakeholders() {
   for (const group in stakeholders) {
     const value = stakeholders[group];
     const p = document.createElement("p");
-    p.innerHTML = <strong>${group}:</strong> ${value};
+    p.innerHTML = `<strong>${group}:</strong> ${value}`;
     div.appendChild(p);
   }
 }
@@ -92,12 +92,12 @@ function renderPeople() {
   people.forEach(person => {
     const wrapper = document.createElement("div");
     wrapper.className = "tooltip";
-    wrapper.innerHTML = <strong>${person.name}:</strong> ${Math.round(person.satisfaction)}&nbsp;&nbsp;;
+    wrapper.innerHTML = `<strong>${person.name}:</strong> ${Math.round(person.satisfaction)}&nbsp;&nbsp;`;
 
     const tooltip = document.createElement("span");
     tooltip.className = "tooltiptext";
     tooltip.innerHTML =
-      Grupper: ${person.groups.join(", ")}<br>Nöjdhet: ${Math.round(person.satisfaction)};
+      `Grupper: ${person.groups.join(", ")}<br>Nöjdhet: ${Math.round(person.satisfaction)}`;
     wrapper.appendChild(tooltip);
     div.appendChild(wrapper);
   });
@@ -116,7 +116,7 @@ function updatePeopleSatisfaction() {
     }
 
     if (person.satisfaction <= minSatisfaction) {
-      alert(Spelet är över! ${person.name} är alltför missnöjd.);
+      alert(`Spelet är över! ${person.name} är alltför missnöjd.`);
       gameOver = true;
       document.querySelectorAll("button").forEach(btn => btn.disabled = true);
     }
@@ -126,7 +126,7 @@ function updatePeopleSatisfaction() {
 }
 
 function updateBudgetDisplay() {
-  document.getElementById("budget-display").textContent = Budget kvar: ${budget.toLocaleString()} kr;
+  document.getElementById("budget-display").textContent = `Budget kvar: ${budget.toLocaleString()} kr`;
 }
 
 function applyPolicy(policyKey) {
@@ -201,7 +201,7 @@ function renderPolicies() {
   div.innerHTML = "";
   policies.forEach(policy => {
     const btn = document.createElement("button");
-    btn.textContent = ${policy.name} (${policy.cost.toLocaleString()} kr);
+    btn.textContent = `${policy.name} (${policy.cost.toLocaleString()} kr)`;
     btn.onclick = () => applyPolicy(policy.key);
     div.appendChild(btn);
   });
@@ -211,4 +211,4 @@ window.onload = () => {
   generatePeople();
   renderPolicies();
   restartGame();
-}; 
+};
