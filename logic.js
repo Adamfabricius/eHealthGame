@@ -84,7 +84,7 @@ function renderStakeholders() {
   for (const group in stakeholders) {
     const value = stakeholders[group];
     const p = document.createElement("p");
-    p.innerHTML = <strong>${group}:</strong> ${value};
+    p.innerHTML = `<strong>${group}:</strong> ${value}`;
     div.appendChild(p);
   }
 }
@@ -95,12 +95,12 @@ function renderPeople() {
   people.forEach(person => {
     const wrapper = document.createElement("div");
     wrapper.className = "tooltip";
-    wrapper.innerHTML = <strong>${person.name}:</strong> ${Math.round(person.satisfaction)}&nbsp;&nbsp;;
+    wrapper.innerHTML = `<strong>${person.name}:</strong> ${Math.round(person.satisfaction)}&nbsp;&nbsp;`;
 
     const tooltip = document.createElement("span");
     tooltip.className = "tooltiptext";
     tooltip.innerHTML =
-      Grupper: ${person.groups.join(", ")}<br>Nöjdhet: ${Math.round(person.satisfaction)};
+      `Grupper: ${person.groups.join(", ")}<br>Nöjdhet: ${Math.round(person.satisfaction)}`;
     wrapper.appendChild(tooltip);
     div.appendChild(wrapper);
   });
@@ -119,7 +119,7 @@ function updatePeopleSatisfaction() {
     }
 
     if (person.satisfaction <= minSatisfaction) {
-      alert(Spelet är över! ${person.name} är alltför missnöjd.);
+      alert(`Spelet är över! ${person.name} är alltför missnöjd.`);
       gameOver = true;
       document.querySelectorAll("button").forEach(btn => btn.disabled = true);
     }
@@ -129,7 +129,7 @@ function updatePeopleSatisfaction() {
 }
 
 function updateBudgetDisplay() {
-  document.getElementById("budget-display").textContent = Budget kvar: ${budget.toLocaleString()} kr;
+  document.getElementById("budget-display").textContent = `Budget kvar: ${budget.toLocaleString()} kr`;
 }
 
 function applyPolicy(policyKey) {
@@ -155,7 +155,7 @@ function applyPolicy(policyKey) {
     delayedEffects.push(policy.delayed);
   }
 
-  document.querySelector(#btn-${policy.key}).disabled = true;
+  document.querySelector(`#btn-${policy.key}`).disabled = true;
 
   const li = document.createElement("li");
   li.textContent = policy.name;
@@ -180,7 +180,8 @@ function update() {
 function nextRound() {
   if (gameOver) return;
 
-  budget += incomePerRound;
+  // Återställ budgeten till startbudgeten
+  budget = initialBudget;
 
   if (delayedEffects.length > 0) {
     const effects = delayedEffects.shift();
@@ -221,8 +222,8 @@ function renderPolicies() {
   div.innerHTML = "";
   policies.forEach(policy => {
     const btn = document.createElement("button");
-    btn.textContent = ${policy.name} (${policy.cost.toLocaleString()} kr);
-    btn.id = btn-${policy.key};
+    btn.textContent = `${policy.name} (${policy.cost.toLocaleString()} kr)`;
+    btn.id = `btn-${policy.key}`;
     btn.onclick = () => applyPolicy(policy.key);
     if (usedPolicyKeys.includes(policy.key)) btn.disabled = true;
     div.appendChild(btn);
