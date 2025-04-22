@@ -5,6 +5,7 @@ const minSatisfaction = 0;
 let gameOver = false;
 let stagedEffects = {};
 let delayedEffects = [];
+let activePolicies = [];
 
 const stakeholderNames = [
   "Patienter", "Äldre", "Unga", "Vårdpersonal", "Teknikföretag",
@@ -139,6 +140,7 @@ function applyPolicy(policyKey) {
   }
 
   budget -= policy.cost;
+  activePolicies.push(policy);
 
   for (const group in policy.effects) {
     stagedEffects[group] = (stagedEffects[group] || 0) + policy.effects[group];
@@ -147,6 +149,8 @@ function applyPolicy(policyKey) {
   if (policy.delayed) {
     delayedEffects.push(policy.delayed);
   }
+
+  document.querySelector(`#btn-${policy.key}`).remove();
 
   const li = document.createElement("li");
   li.textContent = policy.name;
@@ -179,6 +183,14 @@ function nextRound() {
     }
   }
 
+  // Kör effekter för alla aktiva policies varje runda
+  activePolicies.forEach(policy => {
+    for (const group in policy.effects) {
+      stakeholders[group] += policy.effects[group];
+      stakeholders[group] = Math.max(minSatisfaction, Math.min(maxSatisfaction, stakeholders[group]));
+    }
+  });
+
   update();
 }
 
@@ -190,6 +202,7 @@ function restartGame() {
   stakeholderNames.forEach(name => stakeholders[name] = 50);
   stagedEffects = {};
   delayedEffects = [];
+  activePolicies = [];
   generatePeople();
   renderPolicies();
   update();
@@ -202,6 +215,7 @@ function renderPolicies() {
   policies.forEach(policy => {
     const btn = document.createElement("button");
     btn.textContent = `${policy.name} (${policy.cost.toLocaleString()} kr)`;
+    btn.id = `btn-${policy.key}`;
     btn.onclick = () => applyPolicy(policy.key);
     div.appendChild(btn);
   });
