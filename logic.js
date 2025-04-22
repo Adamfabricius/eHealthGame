@@ -16,6 +16,8 @@ const stakeholderNames = [
 let stakeholders = {};
 stakeholderNames.forEach(name => stakeholders[name] = 50);
 
+const firstNames = ["Anna", "Erik", "Sara", "Lukas", "Maja", "Oskar", "Nina", "Ali", "Elsa", "Johan"];
+
 let people = [];
 
 function generatePeople() {
@@ -140,7 +142,6 @@ function applyPolicy(policyKey) {
 
   budget -= policy.cost;
 
-  // Staga effekterna
   for (const group in policy.effects) {
     stagedEffects[group] = (stagedEffects[group] || 0) + policy.effects[group];
   }
@@ -159,30 +160,26 @@ function applyPolicy(policyKey) {
 function nextRound() {
   if (gameOver) return;
 
-  // Återställ budget
-  budget = initialBudget;
-
-  // Tillämpa stagade effekter
   for (const group in stagedEffects) {
     stakeholders[group] += stagedEffects[group];
     stakeholders[group] = Math.max(minSatisfaction, Math.min(maxSatisfaction, stakeholders[group]));
   }
+  stagedEffects = {};
 
-  // Tillämpa fördröjda effekter
   delayedEffects.forEach(effect => {
     for (const group in effect) {
       stakeholders[group] += effect[group];
       stakeholders[group] = Math.max(minSatisfaction, Math.min(maxSatisfaction, stakeholders[group]));
     }
   });
-
-  stagedEffects = {};
   delayedEffects = [];
 
   updatePeopleSatisfaction();
-  updateBudgetDisplay();
   renderStakeholders();
   renderPeople();
+
+  budget = initialBudget;
+  updateBudgetDisplay();
 }
 
 function restartGame() {
@@ -193,8 +190,10 @@ function restartGame() {
   generatePeople();
   stagedEffects = {};
   delayedEffects = [];
+
   document.getElementById("actions").innerHTML = "";
   document.querySelectorAll("button").forEach(btn => btn.disabled = false);
+
   updatePeopleSatisfaction();
   updateBudgetDisplay();
   renderStakeholders();
@@ -209,6 +208,8 @@ function init() {
   renderPeople();
 
   const policyButtons = document.getElementById("policy-buttons");
+  policyButtons.innerHTML = "";
+
   policies.forEach(policy => {
     const wrapper = document.createElement("div");
     wrapper.className = "tooltip";
@@ -242,8 +243,6 @@ function init() {
     wrapper.appendChild(tooltip);
     policyButtons.appendChild(wrapper);
   });
-}
-
 }
 
 window.onload = init;
