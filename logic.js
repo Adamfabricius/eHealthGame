@@ -160,13 +160,12 @@ function applyPolicy(policyKey) {
 function nextRound() {
   if (gameOver) return;
 
-  // Tillämpa staged effekter
   for (const group in stagedEffects) {
     stakeholders[group] += stagedEffects[group];
     stakeholders[group] = Math.max(minSatisfaction, Math.min(maxSatisfaction, stakeholders[group]));
 
     // Kontrollera förlust om en grupps nöjdhet är 0 eller mindre
-    if (stakeholders[group] <= minSatisfaction) {
+    if (stakeholders[group] <= minSatisfaction+1) {
       alert(`Spelet är över! Gruppen "${group}" är alltför missnöjd.`);
       gameOver = true;
       document.querySelectorAll("button").forEach(btn => btn.disabled = true);
@@ -181,7 +180,7 @@ function nextRound() {
       stakeholders[group] += effect[group];
       stakeholders[group] = Math.max(minSatisfaction, Math.min(maxSatisfaction, stakeholders[group]));
 
-      if (stakeholders[group] <= minSatisfaction) {
+      if (stakeholders[group] <= minSatisfaction+1) {
         alert(`Spelet är över! Gruppen "${group}" är alltför missnöjd.`);
         gameOver = true;
         document.querySelectorAll("button").forEach(btn => btn.disabled = true);
