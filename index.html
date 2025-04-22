@@ -1,32 +1,32 @@
 <!DOCTYPE html>
 <html lang="sv">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>E-Hälsospel</title>
-    <link rel="stylesheet" href="style.css">
+  <meta charset="UTF-8">
+  <title>eHälsa Simulationsspel</title>
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <div class="game-container">
-        <h1>E-Hälsospel</h1>
-        <p>Som hälsominister måste du fatta beslut för att förbättra e-hälsosystemet.</p>
-        
-        <div class="stats">
-            <p>Budget: <span id="budget">500000</span> SEK</p>
-            <p>Patientnöjdhet: <span id="patient-satisfaction">50</span>%</p>
-            <p>Digitala tjänster: <span id="digital-services">0</span></p>
-        </div>
-        
-        <div class="actions">
-            <button id="invest-in-digital">Investera i Digitala Tjänster</button>
-            <button id="improve-privacy">Förbättra Sekretess</button>
-        </div>
-        
-        <div class="feedback">
-            <p id="feedback-message"></p>
-        </div>
-    </div>
+  <h1>eHälsa Simulationsspel</h1>
+  <p>Välj policybeslut, hantera budgeten och håll alla nöjdhetsnivåer över 0!</p>
 
-    <script src="script.js"></script>
+  <div class="budget" id="budget-display"></div>
+  <div id="policy-buttons"></div>
+  <button onclick="nextRound()">Nästa Runda</button>
+  <button onclick="restartGame()">Starta Om Spelet</button>
+
+  <div class="status">
+    <h2>Status - Intressenter</h2>
+    <div id="stakeholders"></div>
+
+    <h2>Individer</h2>
+    <div id="people"></div>
+
+    <div class="log">
+      <h3>Genomförda beslut:</h3>
+      <ul id="actions"></ul>
+    </div>
+  </div>
+
+  <script src="logic.js"></script>
 </body>
 </html>
