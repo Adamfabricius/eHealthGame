@@ -1,5 +1,6 @@
 const initialBudget = 100000;
 let budget = initialBudget;
+const incomePerRound = 30000;
 const maxSatisfaction = 100;
 const minSatisfaction = 0;
 let gameOver = false;
@@ -150,7 +151,8 @@ function applyPolicy(policyKey) {
     delayedEffects.push(policy.delayed);
   }
 
-  document.querySelector(`#btn-${policy.key}`).remove();
+  // Disable knappen denna runda
+  document.querySelector(`#btn-${policy.key}`).disabled = true;
 
   const li = document.createElement("li");
   li.textContent = policy.name;
@@ -175,6 +177,16 @@ function update() {
 function nextRound() {
   if (gameOver) return;
 
+  // Lägg till ny budget
+  budget += incomePerRound;
+
+  // Aktivera alla policyknappar igen
+  policies.forEach(policy => {
+    const btn = document.querySelector(`#btn-${policy.key}`);
+    if (btn) btn.disabled = false;
+  });
+
+  // Hantera delayed effects
   if (delayedEffects.length > 0) {
     const effects = delayedEffects.shift();
     for (const group in effects) {
