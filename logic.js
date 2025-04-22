@@ -118,7 +118,7 @@ function updatePeopleSatisfaction() {
       person.satisfaction -= 3;
     }
 
-    if (person.satisfaction <= minSatisfaction) {
+    if (person.satisfaction <= minSatisfaction+1) {
       alert(`Spelet är över! ${person.name} är alltför missnöjd.`);
       gameOver = true;
       document.querySelectorAll("button").forEach(btn => btn.disabled = true);
