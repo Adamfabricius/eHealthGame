@@ -1,13 +1,10 @@
 const initialBudget = 100000;
 let budget = initialBudget;
-const incomePerRound = 30000;
 const maxSatisfaction = 100;
 const minSatisfaction = 0;
 let gameOver = false;
 let stagedEffects = {};
 let delayedEffects = [];
-let activePolicies = [];
-let usedPolicyKeys = [];
 
 const stakeholderNames = [
   "Patienter", "Äldre", "Unga", "Vårdpersonal", "Teknikföretag",
@@ -118,7 +115,7 @@ function updatePeopleSatisfaction() {
       person.satisfaction -= 3;
     }
 
-    if (person.satisfaction <= minSatisfaction+1) {
+    if (person.satisfaction <= minSatisfaction) {
       alert(`Spelet är över! ${person.name} är alltför missnöjd.`);
       gameOver = true;
       document.querySelectorAll("button").forEach(btn => btn.disabled = true);
@@ -134,8 +131,6 @@ function updateBudgetDisplay() {
 
 function applyPolicy(policyKey) {
   if (gameOver) return;
-  if (usedPolicyKeys.includes(policyKey)) return;
-
   const policy = policies.find(p => p.key === policyKey);
 
   if (budget < policy.cost) {
@@ -144,8 +139,6 @@ function applyPolicy(policyKey) {
   }
 
   budget -= policy.cost;
-  activePolicies.push(policy);
-  usedPolicyKeys.push(policyKey);
 
   for (const group in policy.effects) {
     stagedEffects[group] = (stagedEffects[group] || 0) + policy.effects[group];
@@ -154,8 +147,6 @@ function applyPolicy(policyKey) {
   if (policy.delayed) {
     delayedEffects.push(policy.delayed);
   }
-
-  document.querySelector(`#btn-${policy.key}`).disabled = true;
 
   const li = document.createElement("li");
   li.textContent = policy.name;
@@ -180,9 +171,6 @@ function update() {
 function nextRound() {
   if (gameOver) return;
 
-  // Återställ budgeten till startbudgeten
-  budget = initialBudget;
-
   if (delayedEffects.length > 0) {
     const effects = delayedEffects.shift();
     for (const group in effects) {
@@ -190,13 +178,6 @@ function nextRound() {
       stakeholders[group] = Math.max(minSatisfaction, Math.min(maxSatisfaction, stakeholders[group]));
     }
   }
-
-  activePolicies.forEach(policy => {
-    for (const group in policy.effects) {
-      stakeholders[group] += policy.effects[group];
-      stakeholders[group] = Math.max(minSatisfaction, Math.min(maxSatisfaction, stakeholders[group]));
-    }
-  });
 
   update();
 }
@@ -209,8 +190,6 @@ function restartGame() {
   stakeholderNames.forEach(name => stakeholders[name] = 50);
   stagedEffects = {};
   delayedEffects = [];
-  activePolicies = [];
-  usedPolicyKeys = [];
   generatePeople();
   renderPolicies();
   update();
@@ -223,9 +202,7 @@ function renderPolicies() {
   policies.forEach(policy => {
     const btn = document.createElement("button");
     btn.textContent = `${policy.name} (${policy.cost.toLocaleString()} kr)`;
-    btn.id = `btn-${policy.key}`;
     btn.onclick = () => applyPolicy(policy.key);
-    if (usedPolicyKeys.includes(policy.key)) btn.disabled = true;
     div.appendChild(btn);
   });
 }
