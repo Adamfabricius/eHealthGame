@@ -16,6 +16,8 @@ const stakeholderNames = [
 let stakeholders = {};
 stakeholderNames.forEach(name => stakeholders[name] = 50);
 
+const firstNames = ["Anna", "Erik", "Sara", "Lukas", "Maja", "Oskar", "Nina", "Ali", "Elsa", "Johan"];
+
 let people = [];
 
 function generatePeople() {
@@ -149,66 +151,3 @@ function applyPolicy(policyKey) {
   }
 
   const li = document.createElement("li");
-  li.textContent = policy.name;
-  document.getElementById("actions").appendChild(li);
-
-  update();
-}
-
-function update() {
-  for (const group in stagedEffects) {
-    stakeholders[group] += stagedEffects[group];
-    stakeholders[group] = Math.max(minSatisfaction, Math.min(maxSatisfaction, stakeholders[group]));
-  }
-  stagedEffects = {};
-
-  renderStakeholders();
-  updatePeopleSatisfaction();
-  renderPeople();
-  updateBudgetDisplay();
-}
-
-function nextRound() {
-  if (gameOver) return;
-
-  if (delayedEffects.length > 0) {
-    const effects = delayedEffects.shift();
-    for (const group in effects) {
-      stakeholders[group] += effects[group];
-      stakeholders[group] = Math.max(minSatisfaction, Math.min(maxSatisfaction, stakeholders[group]));
-    }
-  }
-
-  update();
-}
-
-function restartGame() {
-  budget = initialBudget;
-  gameOver = false;
-  document.querySelectorAll("button").forEach(btn => btn.disabled = false);
-  stakeholders = {};
-  stakeholderNames.forEach(name => stakeholders[name] = 50);
-  stagedEffects = {};
-  delayedEffects = [];
-  generatePeople();
-  renderPolicies();
-  update();
-  document.getElementById("actions").innerHTML = "";
-}
-
-function renderPolicies() {
-  const div = document.getElementById("policy-buttons");
-  div.innerHTML = "";
-  policies.forEach(policy => {
-    const btn = document.createElement("button");
-    btn.textContent = `${policy.name} (${policy.cost.toLocaleString()} kr)`;
-    btn.onclick = () => applyPolicy(policy.key);
-    div.appendChild(btn);
-  });
-}
-
-window.onload = () => {
-  generatePeople();
-  renderPolicies();
-  restartGame();
-};
