@@ -140,6 +140,7 @@ function applyPolicy(policyKey) {
 
   budget -= policy.cost;
 
+  // Staga effekterna
   for (const group in policy.effects) {
     stagedEffects[group] = (stagedEffects[group] || 0) + policy.effects[group];
   }
@@ -152,63 +153,97 @@ function applyPolicy(policyKey) {
   li.textContent = policy.name;
   document.getElementById("actions").appendChild(li);
 
-  update();
-}
-
-function update() {
-  for (const group in stagedEffects) {
-    stakeholders[group] += stagedEffects[group];
-    stakeholders[group] = Math.max(minSatisfaction, Math.min(maxSatisfaction, stakeholders[group]));
-  }
-  stagedEffects = {};
-
-  renderStakeholders();
-  updatePeopleSatisfaction();
-  renderPeople();
   updateBudgetDisplay();
 }
 
 function nextRound() {
   if (gameOver) return;
 
-  if (delayedEffects.length > 0) {
-    const effects = delayedEffects.shift();
-    for (const group in effects) {
-      stakeholders[group] += effects[group];
-      stakeholders[group] = Math.max(minSatisfaction, Math.min(maxSatisfaction, stakeholders[group]));
-    }
+  // Återställ budget
+  budget = initialBudget;
+
+  // Tillämpa stagade effekter
+  for (const group in stagedEffects) {
+    stakeholders[group] += stagedEffects[group];
+    stakeholders[group] = Math.max(minSatisfaction, Math.min(maxSatisfaction, stakeholders[group]));
   }
 
-  update();
+  // Tillämpa fördröjda effekter
+  delayedEffects.forEach(effect => {
+    for (const group in effect) {
+      stakeholders[group] += effect[group];
+      stakeholders[group] = Math.max(minSatisfaction, Math.min(maxSatisfaction, stakeholders[group]));
+    }
+  });
+
+  stagedEffects = {};
+  delayedEffects = [];
+
+  updatePeopleSatisfaction();
+  updateBudgetDisplay();
+  renderStakeholders();
+  renderPeople();
 }
 
 function restartGame() {
   budget = initialBudget;
   gameOver = false;
-  document.querySelectorAll("button").forEach(btn => btn.disabled = false);
   stakeholders = {};
   stakeholderNames.forEach(name => stakeholders[name] = 50);
+  generatePeople();
   stagedEffects = {};
   delayedEffects = [];
-  generatePeople();
-  renderPolicies();
-  update();
   document.getElementById("actions").innerHTML = "";
+  document.querySelectorAll("button").forEach(btn => btn.disabled = false);
+  updatePeopleSatisfaction();
+  updateBudgetDisplay();
+  renderStakeholders();
+  renderPeople();
 }
 
-function renderPolicies() {
-  const div = document.getElementById("policy-buttons");
-  div.innerHTML = "";
+function init() {
+  generatePeople();
+  updatePeopleSatisfaction();
+  updateBudgetDisplay();
+  renderStakeholders();
+  renderPeople();
+
+  const policyButtons = document.getElementById("policy-buttons");
   policies.forEach(policy => {
-    const btn = document.createElement("button");
-    btn.textContent = `${policy.name} (${policy.cost.toLocaleString()} kr)`;
-    btn.onclick = () => applyPolicy(policy.key);
-    div.appendChild(btn);
+    const wrapper = document.createElement("div");
+    wrapper.className = "tooltip";
+
+    const button = document.createElement("button");
+    button.textContent = policy.name;
+    button.onclick = () => applyPolicy(policy.key);
+    wrapper.appendChild(button);
+
+    const tooltip = document.createElement("span");
+    tooltip.className = "tooltiptext";
+
+    let html = `<strong>Kostnad:</strong> ${policy.cost.toLocaleString()} kr<br><br>`;
+    html += `<strong>Omedelbara effekter:</strong><br>`;
+    for (const group in policy.effects) {
+      const value = policy.effects[group];
+      const color = value > 0 ? "lightgreen" : "salmon";
+      html += `<span style="color:${color}">${group}: ${value > 0 ? "+" : ""}${value}</span><br>`;
+    }
+
+    if (policy.delayed) {
+      html += `<br><strong>Fördröjda effekter:</strong><br>`;
+      for (const group in policy.delayed) {
+        const value = policy.delayed[group];
+        const color = value > 0 ? "lightgreen" : "salmon";
+        html += `<span style="color:${color}">${group}: ${value > 0 ? "+" : ""}${value}</span><br>`;
+      }
+    }
+
+    tooltip.innerHTML = html;
+    wrapper.appendChild(tooltip);
+    policyButtons.appendChild(wrapper);
   });
 }
 
-window.onload = () => {
-  generatePeople();
-  renderPolicies();
-  restartGame();
-};
+}
+
+window.onload = init;
