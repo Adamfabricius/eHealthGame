@@ -60,3 +60,19 @@ button {
   visibility: visible;
   opacity: 1;
 }
+
+#policy-buttons .tooltip {
+  display: inline-block;
+  position: relative;
+  margin: 5px;
+}
+
+#policy-buttons .tooltip .tooltiptext {
+  width: 250px;
+  bottom: 125%;
+  left: 50%;
+  margin-left: -125px;
+  font-size: 12px;
+  z-index: 100;
+}
+
