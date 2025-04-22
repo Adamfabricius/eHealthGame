@@ -73,7 +73,6 @@ const policies = [
     cost: 40000,
     effects: { "Patienter": +10, "Migranter": +10, "Försäkringsbolag": -5 }
   }
-  {
 ];
 
 function renderStakeholders() {
