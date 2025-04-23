@@ -7,7 +7,7 @@ let stagedEffects = {};
 let delayedEffects = [];
 
 const stakeholderNames = [
-  "Patienter", "Äldre", "Unga", "Vårdpersonal", "Teknikföretag",
+  "Äldre", "Unga", "Vårdpersonal", "Teknikföretag",
   "Integritetsförespråkare", "Sjukhusadministration", "Försäkringsbolag",
   "Digitala utvecklare", "Funktionsrättsorganisationer", "Migranter",
   "Traditionalister", "Fackföreningar"
@@ -22,15 +22,15 @@ let people = [];
 
 function generatePeople() {
   people = [
-    { name: "Anna", groups: ["Patienter", "Äldre", "Traditionalister"], satisfaction: 50 },
+    { name: "Anna", groups: ["Äldre", "Traditionalister"], satisfaction: 50 },
     { name: "Erik", groups: ["Unga", "Teknikföretag", "Digitala utvecklare"], satisfaction: 50 },
     { name: "Sara", groups: ["Äldre", "Vårdpersonal", "Fackföreningar"], satisfaction: 50 },
-    { name: "Lukas", groups: ["Patienter", "Migranter", "Försäkringsbolag"], satisfaction: 50 },
+    { name: "Lukas", groups: ["Migranter", "Försäkringsbolag"], satisfaction: 50 },
     { name: "Maja", groups: ["Unga", "Digitala utvecklare", "Integritetsförespråkare"], satisfaction: 50 },
     { name: "Oskar", groups: ["Sjukhusadministration", "Fackföreningar", "Traditionalister"], satisfaction: 50 },
-    { name: "Nina", groups: ["Patienter", "Funktionsrättsorganisationer", "Äldre"], satisfaction: 50 },
+    { name: "Nina", groups: ["Funktionsrättsorganisationer", "Äldre"], satisfaction: 50 },
     { name: "Ali", groups: ["Migranter", "Teknikföretag", "Försäkringsbolag"], satisfaction: 50 },
-    { name: "Elsa", groups: ["Integritetsförespråkare", "Unga", "Patienter"], satisfaction: 50 },
+    { name: "Elsa", groups: ["Integritetsförespråkare", "Unga"], satisfaction: 50 },
     { name: "Johan", groups: ["Vårdpersonal", "Sjukhusadministration", "Fackföreningar"], satisfaction: 50 }
   ];
 }
@@ -40,14 +40,14 @@ const policies = [
     key: "bankid",
     name: "Obligatorisk BankID",
     cost: 20000,
-    effects: { "Patienter": -5, "Äldre": -15, "Teknikföretag": +10, "Migranter": -10, "Unga": +10 },
+    effects: { "Äldre": -15, "Teknikföretag": +10, "Migranter": -10, "Unga": +10 },
     delayed: { "Integritetsförespråkare": -5 }
   },
   {
     key: "chatbot",
     name: "Gratis AI-chattbotar",
     cost: 15000,
-    effects: { "Patienter": +5, "Äldre": -5, "Teknikföretag": +10, "Integritetsförespråkare": -10, "Unga": +7 },
+    effects: { "Äldre": -5, "Teknikföretag": +10, "Integritetsförespråkare": -10, "Unga": +7 },
     delayed: { "Vårdpersonal": -5 }
   },
   {
@@ -66,14 +66,14 @@ const policies = [
     key: "telemedicine",
     name: "Telemedicin som standard",
     cost: 20000,
-    effects: { "Patienter": +5, "Äldre": -10, "Vårdpersonal": -5, "Teknikföretag": +10, "Unga": +10 },
+    effects: { "Äldre": -10, "Vårdpersonal": -5, "Teknikföretag": +10, "Unga": +10 },
     delayed: { "Fackföreningar": -5 }
   },
   {
     key: "subsidy",
     name: "Subventionerade smarttelefoner",
     cost: 40000,
-    effects: { "Patienter": +10, "Migranter": +10, "Försäkringsbolag": -5 }
+    effects: { "Migranter": +10, "Försäkringsbolag": -5 }
   }
 ];
 
