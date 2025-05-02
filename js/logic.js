@@ -102,7 +102,7 @@ const policies = [
         cost: 15000,
         effects: { "Vårdpersonal": +10, "Äldre": +5, "Fackföreningar": +5, "Unga": -2 },
         requires: ["ehr", "chatbot"] // Utbildning relevant först när system finns
-    }, 
+    },
     {
         key: "efficiency-overhaul",
         name: "Effektivitetsoptimering via AI",
@@ -337,6 +337,7 @@ function nextRound() {
     renderPeople();
 
     budget = initialBudget;
+    updatePolicyButtons();
     updateBudgetDisplay();
 }
 
@@ -356,6 +357,30 @@ function restartGame() {
     updateBudgetDisplay();
     renderStakeholders();
     renderPeople();
+    updatePolicyButtons();
+}
+
+function updatePolicyButtons() {
+    policies.forEach(policy => {
+        const button = document.querySelector(`button[data-policy="${policy.key}"]`);
+        if (!button) return;
+
+        if (selectedPolicies.includes(policy.key)) return; // redan vald – rör inte
+
+        if (Array.isArray(policy.requires)) {
+            const unmet = policy.requires.filter(req => !selectedPolicies.includes(req));
+            if (unmet.length > 0) {
+                button.disabled = true;
+                button.title = `Kräver först: ${unmet.map(k => policies.find(p => p.key === k).name).join(", ")}`;
+            } else {
+                button.disabled = false;
+                button.title = "";
+            }
+        } else {
+            button.disabled = false;
+            button.title = "";
+        }
+    });
 }
 
 function init() {
@@ -413,6 +438,7 @@ function init() {
         tooltip.innerHTML = html;
         wrapper.appendChild(tooltip);
         policyButtons.appendChild(wrapper);
+        updatePolicyButtons();
     });
 }
 
