@@ -8,8 +8,6 @@ let delayedEffects = [];
 let selectedThisRound = new Set();
 let selectedPolicies = [];
 
-
-
 const stakeholderNames = [
     "Äldre", "Unga", "Vårdpersonal", "Teknikföretag",
     "Integritetsförespråkare", "Sjukhusadministration", "Försäkringsbolag",
@@ -43,20 +41,19 @@ const policies = [
         name: "Obligatorisk BankID",
         cost: 20000,
         effects: { "Äldre": -15, "Teknikföretag": +10, "Migranter": -10, "Unga": +10 },
-        delayed: { "Integritetsförespråkare": -5 }
     },
     {
         key: "chatbot",
         name: "Gratis AI-chattbotar",
         cost: 15000,
-        effects: { "Äldre": -5, "Teknikföretag": +10, "Integritetsförespråkare": -10, "Unga": +5 },
-        delayed: { "Vårdpersonal": -5 }
+        effects: { "Äldre": -5, "Teknikföretag": +10, "Integritetsförespråkare": -10, "Unga": +5, "Digitala utvecklare": +5 },
+        requires: ["bankid", "ehr"]
     },
     {
         key: "paper",
         name: "Garantera pappersbaserad vård",
         cost: 25000,
-        effects: { "Äldre": +20, "Traditionalister": +10, "Teknikföretag": -10, "Unga": -5 }
+        effects: { "Äldre": +15, "Traditionalister": +10, "Teknikföretag": -10, "Unga": -5, "Digitala utvecklare": -5 }
     },
     {
         key: "ehr",
@@ -69,7 +66,8 @@ const policies = [
         name: "Telemedicin som standard",
         cost: 20000,
         effects: { "Äldre": -10, "Vårdpersonal": -5, "Teknikföretag": +10, "Unga": +10, "Digitala utvecklare": +10 },
-        delayed: { "Fackföreningar": -5 }
+        delayed: { "Fackföreningar": -5 },
+        requires: ["bankid"]
     },
     {
         key: "subsidy",
@@ -77,12 +75,47 @@ const policies = [
         cost: 40000,
         effects: { "Migranter": +10, "Försäkringsbolag": -5, "Teknikföretag": +10 }
     },
-    {key: "language-support",
+    {
+        key: "language-support",
         name: "Multilingual support-paket",
         cost: 40000,
         effects: { "Migranter": +15, "Unga": +3, "Digitala utvecklare": -5, "Sjukhusadministration": +5, "Traditionalister": -5 }
+    },
+    {
+        key: "prevent",
+        name: "Preventiv AI-vård",
+        cost: 45000,
+        effects: { "Försäkringsbolag": +15, "Fackföreningar": +5, "Sjukhusadministration": -5, "Traditionalister": -5 },
+        delayed: { "Sjukhusadministration": -5 },
+        requires: ["chatbot", "ehr"]
+    },
+    {
+        key: "AItriage",
+        name: "AI-assisterad triage",
+        cost: 30000,
+        effects: { "Migranter": +15, "Unga": +3, "Digitala utvecklare": -5, "Sjukhusadministration": +5, "Traditionalister": -5 },
+        requires: ["chatbot"]
+    },
+    {
+        key: "user-training",
+        name: "Obligatorisk användarutbildning",
+        cost: 15000,
+        effects: { "Vårdpersonal": +10, "Äldre": +5, "Fackföreningar": +5, "Unga": -2 },
+        requires: ["ehr", "chatbot"] // Utbildning relevant först när system finns
+    }, 
+    {
+        key: "efficiency-overhaul",
+        name: "Effektivitetsoptimering via AI",
+        cost: 35000,
+        effects: {
+            "Sjukhusadministration": +15,
+            "Försäkringsbolag": +10,
+            "Fackföreningar": -10,
+            "Vårdpersonal": -5,
+            "Integritetsförespråkare": -5
+        },
+        requires: ["prevent", "AItriage"]
     }
-
 ];
 
 function renderStakeholders() {
@@ -157,12 +190,6 @@ function updatePeopleSatisfaction() {
         }
         person.satisfaction = total / person.groups.length;
 
-        if (person.satisfaction < 49) {
-            person.satisfaction -= 5;
-        } else if (person.satisfaction > 70) {
-            person.satisfaction += 5;
-        }
-
         person.satisfaction = Math.min(maxSatisfaction, Math.max(minSatisfaction, person.satisfaction));
 
         if (person.satisfaction < minSatisfaction + 1) {
@@ -221,6 +248,15 @@ function togglePolicy(policyKey) {
         button.classList.remove("selected");
         button.textContent = policies.find(p => p.key === policyKey).name;
     } else {
+        // Kontrollera om policyn har krav
+        if (Array.isArray(policy.requires)) {
+            const unmet = policy.requires.filter(req => !selectedPolicies.includes(req));
+            if (unmet.length > 0) {
+                alert(`Du måste först välja: ${unmet.map(k => policies.find(p => p.key === k).name).join(", ")}`);
+                return;
+            }
+        }
+
         // Nytt val
         if (budget < policy.cost) {
             alert("Inte tillräckligt med budget!");
@@ -246,6 +282,17 @@ function togglePolicy(policyKey) {
         button.textContent = `✅ ${policy.name}`;
         updateBudgetDisplay();
     }
+
+    // Aktivera policies som nu är upplåsta
+    policies.forEach(p => {
+        if (p.requires === policyKey) {
+            const dependentBtn = document.querySelector(`button[data-policy="${p.key}"]`);
+            if (dependentBtn) {
+                dependentBtn.disabled = false;
+                dependentBtn.title = "";
+            }
+        }
+    });
 }
 
 
@@ -272,6 +319,14 @@ function nextRound() {
     });
     delayedEffects = [];
 
+    // Minskad nöjdhet för missnöjda grupper
+    for (const group in stakeholders) {
+        if (stakeholders[group] < 25) {
+            stakeholders[group] -= 5;
+            stakeholders[group] = Math.max(minSatisfaction, stakeholders[group]);
+        }
+    }
+
     // Kontrollera om någon grupp är missnöjd
     if (checkGroupSatisfaction()) return;
 
@@ -284,8 +339,6 @@ function nextRound() {
     budget = initialBudget;
     updateBudgetDisplay();
 }
-
-
 
 function restartGame() {
     budget = initialBudget;
@@ -346,6 +399,14 @@ function init() {
                 const value = policy.delayed[group];
                 const symbol = getEffectSymbol(value);
                 html += `${group}: ${symbol}<br>`;
+            }
+        }
+
+        if (Array.isArray(policy.requires)) {
+            const unmet = policy.requires.filter(req => !selectedPolicies.includes(req));
+            if (unmet.length > 0) {
+                button.disabled = true;
+                button.title = `Kräver först: ${unmet.map(k => policies.find(p => p.key === k).name).join(", ")}`;
             }
         }
 
