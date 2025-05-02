@@ -195,7 +195,12 @@ function updatePeopleSatisfaction() {
         if (person.satisfaction < minSatisfaction + 1) {
             alert(`Spelet är över! ${person.name} är alltför missnöjd.`);
             gameOver = true;
-            document.querySelectorAll("button").forEach(btn => btn.disabled = true);
+            document.querySelectorAll("button").forEach(btn => {
+                if (btn.id !== "restart-button") {
+                    btn.disabled = true;
+                }
+            });
+            ;
             return;
         }
     }
@@ -206,7 +211,12 @@ function checkGroupSatisfaction() {
         if (stakeholders[group] < minSatisfaction + 1) {
             alert(`Spelet är över! Gruppen "${group}" är alltför missnöjd.`);
             gameOver = true;
-            document.querySelectorAll("button").forEach(btn => btn.disabled = true);
+            document.querySelectorAll("button").forEach(btn => {
+                if (btn.id !== "restart-button") {
+                    btn.disabled = true;
+                }
+            });
+
             return true;
         }
     }
@@ -244,6 +254,16 @@ function togglePolicy(policyKey) {
 
         // Uppdatera visualiseringen
         updateBudgetDisplay();
+        const affectedPolicies = selectedPolicies.filter(pKey => {
+            const dependentPolicy = policies.find(p => p.key === pKey);
+            return dependentPolicy.requires && dependentPolicy.requires.includes(policyKey);
+        });
+
+        affectedPolicies.forEach(depKey => {
+            togglePolicy(depKey); // Avmarkera beroende policy rekursivt
+            const depName = policies.find(p => p.key === depKey).name;
+            showPolicyMessage(`"${depName}" avmarkeras eftersom ett krav inte längre är valt.`);
+        });
         selectedPolicies.splice(index, 1);
         button.classList.remove("selected");
         button.textContent = policies.find(p => p.key === policyKey).name;
@@ -344,9 +364,13 @@ function nextRound() {
 function restartGame() {
     budget = initialBudget;
     gameOver = false;
+
     stakeholders = {};
     stakeholderNames.forEach(name => stakeholders[name] = 50);
+
     generatePeople();
+
+    selectedPolicies = [];
     stagedEffects = {};
     delayedEffects = [];
 
@@ -357,8 +381,16 @@ function restartGame() {
     updateBudgetDisplay();
     renderStakeholders();
     renderPeople();
-    updatePolicyButtons();
+    document.querySelectorAll("button[data-policy]").forEach(btn => {
+        btn.classList.remove("selected");
+        const key = btn.getAttribute("data-policy");
+        const policy = policies.find(p => p.key === key);
+        btn.textContent = policy.name;
+    });
+
+    updatePolicyButtons(); // Viktigt – återställ beroenden korrekt
 }
+
 
 function updatePolicyButtons() {
     policies.forEach(policy => {
@@ -382,6 +414,13 @@ function updatePolicyButtons() {
         }
     });
 }
+
+function showPolicyMessage(message) {
+    const msgDiv = document.getElementById("policy-message");
+    msgDiv.textContent = message;
+    setTimeout(() => msgDiv.textContent = "", 4000); // Rensa efter 4 sekunder
+}
+
 
 function init() {
     generatePeople();
