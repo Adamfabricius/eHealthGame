@@ -40,32 +40,61 @@ const policies = [
         key: "bankid",
         name: "Obligatorisk BankID",
         cost: 20000,
-        effects: { "Äldre": -15, "Teknikföretag": +10, "Migranter": -10, "Unga": +10 },
+        effects: {
+            "Äldre": -15,
+            "Teknikföretag": +10,
+            "Migranter": -10,
+            "Unga": +10,
+            "Digitala utvecklare": +5,
+            "Traditionalister": -10
+        },
     },
     {
         key: "chatbot",
         name: "Gratis AI-chattbotar",
         cost: 15000,
-        effects: { "Äldre": -5, "Teknikföretag": +10, "Integritetsförespråkare": -10, "Unga": +5, "Digitala utvecklare": +5 },
+        effects: {
+            "Äldre": -5,
+            "Teknikföretag": +10,
+            "Integritetsförespråkare": -10,
+            "Unga": +5,
+            "Digitala utvecklare": +5,
+        },
         requires: ["bankid", "ehr"]
     },
     {
         key: "paper",
         name: "Garantera pappersbaserad vård",
         cost: 25000,
-        effects: { "Äldre": +15, "Traditionalister": +10, "Teknikföretag": -10, "Unga": -5, "Digitala utvecklare": -5 }
+        effects: {
+            "Äldre": +15,
+            "Traditionalister": +10,
+            "Teknikföretag": -10,
+            "Unga": -5,
+            "Digitala utvecklare": -5
+        }
     },
     {
         key: "ehr",
         name: "Nationellt Elektroniskt Journalsystem",
         cost: 30000,
-        effects: { "Sjukhusadministration": +15, "Integritetsförespråkare": -10, "Digitala utvecklare": +10 }
+        effects: {
+            "Sjukhusadministration": +15,
+            "Integritetsförespråkare": -10,
+            "Digitala utvecklare": +10
+        }
     },
     {
         key: "telemedicine",
         name: "Telemedicin som standard",
         cost: 20000,
-        effects: { "Äldre": -10, "Vårdpersonal": -5, "Teknikföretag": +10, "Unga": +10, "Digitala utvecklare": +10 },
+        effects: {
+            "Äldre": -10,
+            "Vårdpersonal": -5,
+            "Teknikföretag": +10,
+            "Unga": +10,
+            "Digitala utvecklare": +10
+        },
         delayed: { "Fackföreningar": -5 },
         requires: ["bankid"]
     },
@@ -73,19 +102,34 @@ const policies = [
         key: "subsidy",
         name: "Subventionerade smarttelefoner",
         cost: 40000,
-        effects: { "Migranter": +10, "Försäkringsbolag": -5, "Teknikföretag": +10 }
+        effects: {
+            "Migranter": +10,
+            "Försäkringsbolag": -5,
+            "Teknikföretag": +10
+        }
     },
     {
         key: "language-support",
         name: "Multilingual support-paket",
         cost: 40000,
-        effects: { "Migranter": +15, "Unga": +3, "Digitala utvecklare": -5, "Sjukhusadministration": +5, "Traditionalister": -5 }
+        effects: {
+            "Migranter": +15,
+            "Unga": +3,
+            "Digitala utvecklare": -5,
+            "Sjukhusadministration": +5,
+            "Traditionalister": -5
+        }
     },
     {
         key: "prevent",
         name: "Preventiv AI-vård",
         cost: 45000,
-        effects: { "Försäkringsbolag": +15, "Fackföreningar": +5, "Sjukhusadministration": -5, "Traditionalister": -5 },
+        effects: {
+            "Försäkringsbolag": +15,
+            "Fackföreningar": +5,
+            "Sjukhusadministration": -5,
+            "Traditionalister": -5
+        },
         delayed: { "Sjukhusadministration": -5 },
         requires: ["chatbot", "ehr"]
     },
@@ -93,15 +137,26 @@ const policies = [
         key: "AItriage",
         name: "AI-assisterad triage",
         cost: 30000,
-        effects: { "Migranter": +15, "Unga": +3, "Digitala utvecklare": -5, "Sjukhusadministration": +5, "Traditionalister": -5 },
+        effects: {
+            "Migranter": +15,
+            "Unga": +3,
+            "Digitala utvecklare": -5,
+            "Sjukhusadministration": +5,
+            "Traditionalister": -5
+        },
         requires: ["chatbot"]
     },
     {
         key: "user-training",
         name: "Obligatorisk användarutbildning",
         cost: 15000,
-        effects: { "Vårdpersonal": +10, "Äldre": +5, "Fackföreningar": +5, "Unga": -2 },
-        requires: ["ehr", "chatbot"] // Utbildning relevant först när system finns
+        effects: {
+            "Vårdpersonal": +10,
+            "Äldre": +5,
+            "Fackföreningar": +5,
+            "Unga": -2
+        },
+        requires: ["ehr", "chatbot"]
     },
     {
         key: "efficiency-overhaul",
@@ -115,6 +170,17 @@ const policies = [
             "Integritetsförespråkare": -5
         },
         requires: ["prevent", "AItriage"]
+    },
+    {
+        key: "Analogassist",
+        name: "Analog Assistansprogram",
+        cost: 35000,
+        effects: {
+            "Ädre": +15,
+            "Vårdpersonal": +10,
+            "Digitala utvecklare": -5
+        },
+        requires: ["paper"]
     }
 ];
 
@@ -315,6 +381,24 @@ function togglePolicy(policyKey) {
     });
 }
 
+function nextRoundBudget() {
+    switch (true) {
+        case (budget >= initialBudget):
+            return;
+        case (budget >= 75000):
+            budget += 25000; return;
+        case (budget >= 50000):
+            budget += 15000; return;
+        case (budget >= 25000):
+            budget += 15000; return;
+        case (budget >= 15000):
+            budget += 10000; return;
+        default:
+            budget += 7500; return;
+    }
+}
+
+
 
 function nextRound() {
     if (gameOver) return;
@@ -355,8 +439,7 @@ function nextRound() {
 
     renderStakeholders();
     renderPeople();
-
-    budget = initialBudget;
+    nextRoundBudget();
     updatePolicyButtons();
     updateBudgetDisplay();
 }
