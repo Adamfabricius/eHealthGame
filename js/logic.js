@@ -311,7 +311,6 @@ function getEffectSymbol(value) {
 }
 
 function getSatisfactionSymbol(value) {
-    return value;
     switch (true) {
         case (value >= 80):
             return "😄";
