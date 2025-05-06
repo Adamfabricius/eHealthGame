@@ -1,37 +1,56 @@
-
 <!DOCTYPE html>
 <html lang="sv">
 <head>
   <meta charset="UTF-8">
-  <title>Ehälsa Simulationsspel</title>
+  <title>Välkommen till eHälsa-spelet</title>
   <link rel="stylesheet" href="css/style.css">
+  <style>
+    body {
+      text-align: center;
+      padding: 50px;
+      background-color: #f0f2f5;
+      font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
+    }
+
+    h1 {
+      font-size: 28px;
+      margin-bottom: 20px;
+    }
+
+    p {
+      font-size: 18px;
+      max-width: 600px;
+      margin: auto;
+      margin-bottom: 30px;
+    }
+
+    a.button {
+      display: inline-block;
+      padding: 12px 24px;
+      font-size: 16px;
+      background-color: #007bff;
+      color: white;
+      text-decoration: none;
+      border-radius: 5px;
+      transition: background-color 0.3s ease;
+    }
+
+    a.button:hover {
+      background-color: #0056b3;
+    }
+  </style>
 </head>
 <body>
-  <h1>Ehälsa Simulationsspel </h1>
-  <p>Av: Adam Fabricius-Hansen och Caspar Alhadeff</p>
-  
-  <p>Välj policybeslut, hantera budget och håll alla nöjdhetsnivåer över 0!</p>
 
-  <div class="budget" id="budget-display"></div>
-  <div id="policy-buttons"></div>
-  <button onclick="nextRound()">Nästa Runda</button>
-  <button onclick="restartGame()">Starta Om Spelet</button>
+  <h1>Välkommen till eHälsa-simulationsspelet</h1>
 
+  <p>
+    Grattis! Du är nu ansvarig för eHälsa i Sverige. Ditt uppdrag är att balansera olika intressenter och individer i samhället. 
+    Testa hur väl du kan hantera eHälsa för alla i Sverige genom att hålla stödet från minst 10 personer uppe! 
+    Klarar du att hålla alla nöjda i så många rundor som möjligt?
+  </p>
 
-  <div class="status">
-    <h2>Status - Intressenter</h2>
-    <div id="stakeholders"></div>
-
-    <h2>Individer</h2>
-    <div id="people"></div>
-
-    <div class="log">
-      <h3>Genomförda beslut:</h3>
-      <ul id="actions"></ul>
-    </div>
-  </div>
-
-  <script src="js/logic.js"></script>
+  <a class="button" href="game.html">Starta spelet</a>
 
 </body>
 </html>
