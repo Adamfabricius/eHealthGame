@@ -7,6 +7,7 @@ let stagedEffects = {};
 let delayedEffects = [];
 let selectedThisRound = new Set();
 let selectedPolicies = [];
+let roundNumber = 1;
 
 const stakeholderNames = [
     "Äldre", "Unga", "Vårdpersonal", "Teknikföretag",
@@ -39,41 +40,49 @@ const policies = [
     {
         key: "bankid",
         name: "Obligatorisk BankID",
+        description: "Gör BankID obligatoriskt som ID-handling i alla vårdsammanhang",
         cost: 20000,
         effects: {
-            "Äldre": -15,
+            "Äldre": -10,
             "Teknikföretag": +10,
             "Migranter": -10,
             "Unga": +10,
             "Digitala utvecklare": +5,
-            "Traditionalister": -10
+            "Traditionalister": -10,
+            "Integritetsförespråkare": +10,
         },
+        delayed:{ "Äldre": +5}
     },
     {
         key: "paper",
         name: "Garantera pappersbaserad vård",
+        description: "Pappersalternativ garanteras för patienter som inte vill eller kan använda digital legitimation.",
         cost: 25000,
         effects: {
             "Äldre": +15,
             "Traditionalister": +10,
             "Teknikföretag": -10,
-            "Unga": -5,
-            "Digitala utvecklare": -5
+            "Unga": -7,
+            "Digitala utvecklare": -5,
+            "Migranter" : + 10,
+            "Integritetsförespråkare": +5
         }
     },
     {
         key: "ehr",
         name: "Nationellt Elektroniskt Journalsystem",
+        description: "Alla vårdgivare kopplas till ett gemensamt digitalt journalsystem.",
         cost: 30000,
         effects: {
             "Sjukhusadministration": +15,
-            "Integritetsförespråkare": -10,
+            "Integritetsförespråkare": -5,
             "Digitala utvecklare": +10
         }
     },
     {
         key: "subsidy",
         name: "Subventionerade smarttelefoner",
+        description: "Personer med låg inkomst erbjuds rabatt på smartphones för att öka digital delaktighet.",
         cost: 40000,
         effects: {
             "Migranter": +10,
@@ -84,6 +93,7 @@ const policies = [
     {
         key: "language-support",
         name: "Multilingual support-paket",
+        description: "Digitala tjänster i vården får stöd för flera språk och kulturer.",
         cost: 40000,
         effects: {
             "Migranter": +15,
@@ -93,9 +103,21 @@ const policies = [
             "Traditionalister": -5
         }
     },
+        {
+        key: "secure",
+        name: "Strikta Integritetsstandarder för Digitala Hälsosystem",
+        description: "Denna policy säkerställer att alla digitala hälsosystem, inklusive elektroniska journalsystem och telemedicinlösningar, följer de strängaste integritets- och säkerhetsstandarderna.",
+        cost: 40000,
+        effects: {
+            "Integritetsförespråkare": +20,
+            "Teknikföretag": -5,
+            "Digitala utvecklare": -5,
+        }
+    },
     {
         key: "telemedicine",
         name: "Telemedicin som standard",
+        description: "Digitala vårdmöten blir förstahandsalternativ vid vårdkontakt.",
         cost: 20000,
         effects: {
             "Äldre": -10,
@@ -104,15 +126,15 @@ const policies = [
             "Unga": +10,
             "Digitala utvecklare": +10
         },
-        delayed: { "Fackföreningar": -5 },
+        delayed: {"Fackföreningar": -5, "Äldre": +5},
         requires: ["bankid"]
     },
     {
         key: "chatbot",
         name: "Gratis AI-chattbotar",
+        description: "AI-drivna chattbotar tillhandahåller grundläggande vårdrådgivning dygnet runt.",
         cost: 15000,
         effects: {
-            "Äldre": -5,
             "Teknikföretag": +10,
             "Integritetsförespråkare": -10,
             "Unga": +5,
@@ -123,6 +145,7 @@ const policies = [
     {
         key: "prevent",
         name: "Preventiv AI-vård",
+        description: "AI används för att upptäcka risker och förhindra sjukdom i ett tidigt skede.",
         cost: 45000,
         effects: {
             "Försäkringsbolag": +15,
@@ -136,19 +159,21 @@ const policies = [
     {
         key: "AItriage",
         name: "AI-assisterad triage",
+        description: "AI bedömer vårdbehov och prioritering vid patientkontakt.",
         cost: 30000,
         effects: {
             "Migranter": +15,
             "Unga": +3,
             "Digitala utvecklare": -5,
             "Sjukhusadministration": +5,
-            "Traditionalister": -5
+            "Traditionalister": +5
         },
         requires: ["chatbot"]
     },
     {
         key: "user-training",
         name: "Obligatorisk användarutbildning",
+        description: "Vårdanställda och patienter utbildas i digitala verktyg.",
         cost: 15000,
         effects: {
             "Vårdpersonal": +10,
@@ -156,11 +181,13 @@ const policies = [
             "Fackföreningar": +5,
             "Unga": -2
         },
+        delayed: {"traditionaliser": +5, "Äldre": +5},
         requires: ["ehr", "chatbot"]
     },
     {
         key: "efficiency-overhaul",
         name: "Effektivitetsoptimering via AI",
+        description: "Gör BankID obligatoriskt som ID-handling i alla vårdsammanhang",
         cost: 35000,
         effects: {
             "Sjukhusadministration": +15,
@@ -174,6 +201,7 @@ const policies = [
     {
         key: "Analogassist",
         name: "Analog Assistansprogram",
+        description: "Personlig hjälp erbjuds till patienter som inte kan använda digitala tjänster.",
         cost: 35000,
         effects: {
             "Ädre": +15,
@@ -185,6 +213,7 @@ const policies = [
     {
         key: "interpreter-app",
         name: "Personlig tolk via app",
+        description: "App-baserad tillgång till professionella tolkar för patienter.",
         cost: 35000,
         effects: {
             "Migranter": +15,
@@ -195,6 +224,7 @@ const policies = [
     }, {
         key: "digital-intro",
         name: "Digital introduktion för nyanlända",
+        description: "Ett särskilt digitalt introduktionsprogram för att hjälpa nyanlända navigera vården.",
         cost: 25000,
         effects: {
             "Migranter": +10,
@@ -207,15 +237,41 @@ const policies = [
 
 function renderStakeholders() {
     const div = document.getElementById("stakeholders");
-    div.innerHTML = "";
+    div.innerHTML = ""; // Rensa tidigare innehåll
+
+    // Skapa en wrapper för intressenter
+    const wrapper = document.createElement("div");
+    wrapper.className = "stakeholder-wrapper";
+
+    // Loopa genom intressentgrupperna och skapa en ny div för varje
+    let counter = 0;
     for (const group in stakeholders) {
         const value = stakeholders[group];
         const symbol = getSatisfactionSymbol(value);
-        const p = document.createElement("p");
-        p.innerHTML = `<strong>${group}:</strong> ${symbol}`;
-        div.appendChild(p);
+
+        // Skapa en individuell "cell" för varje stakeholder
+        const stakeholderDiv = document.createElement("div");
+        stakeholderDiv.className = "stakeholder-cell";
+
+        // Lägg till gruppens namn och symbol
+        stakeholderDiv.innerHTML = `<strong>${group}:</strong> ${symbol}`;
+        
+        // Lägg till cellen till wrappern
+        wrapper.appendChild(stakeholderDiv);
+        counter++;
+
+        // Varje 3:e intressent ska börja en ny rad
+        if (counter % 3 === 0) {
+            const lineBreak = document.createElement("div");
+            lineBreak.style.clear = "both"; // Tvingar nästa rad att börja på en ny rad
+            wrapper.appendChild(lineBreak);
+        }
     }
+
+    // Lägg till wrappern till div
+    div.appendChild(wrapper);
 }
+
 
 function renderPeople() {
     const div = document.getElementById("people");
@@ -255,6 +311,7 @@ function getEffectSymbol(value) {
 }
 
 function getSatisfactionSymbol(value) {
+    return value;
     switch (true) {
         case (value >= 80):
             return "😄";
@@ -271,32 +328,49 @@ function getSatisfactionSymbol(value) {
 
 function updatePeopleSatisfaction() {
     for (const person of people) {
+        // Kolla om någon av grupperna personen tillhör är nära 0
+        for (const g of person.groups) {
+            if (stakeholders[g] <= minSatisfaction) {
+                alert(`Spelet är över! Du klarade dig i ${roundNumber} rundor, men ${person.name} är alltför missnöjd, eftersom "${g}" är missnöjda.`);
+                gameOver = true;
+                document.querySelectorAll("button").forEach(btn => {
+                    if (btn.id !== "restart-button") {
+                        btn.disabled = true;
+                    }
+                });
+                return;
+            }
+        }
+
+        // Räkna ut personens genomsnittliga nöjdhet
         let total = 0;
         for (const g of person.groups) {
             total += stakeholders[g];
         }
         person.satisfaction = total / person.groups.length;
 
+        // Begränsa inom min/max
         person.satisfaction = Math.min(maxSatisfaction, Math.max(minSatisfaction, person.satisfaction));
 
+        // Om personens egen nöjdhet går under gränsen
         if (person.satisfaction < minSatisfaction + 1) {
-            alert(`Spelet är över! ${person.name} är alltför missnöjd.`);
+            alert(`Spelet är över! Du klarade dig i ${roundNumber}, men ${person.name} är alltför missnöjd.`);
             gameOver = true;
             document.querySelectorAll("button").forEach(btn => {
                 if (btn.id !== "restart-button") {
                     btn.disabled = true;
                 }
             });
-            ;
             return;
         }
     }
 }
 
+
 function checkGroupSatisfaction() {
     for (const group in stakeholders) {
         if (stakeholders[group] < minSatisfaction + 1) {
-            alert(`Spelet är över! Gruppen "${group}" är alltför missnöjd.`);
+            alert(`Spelet är över! Du klarde dig i ${roundNumber}, men "${group}" är alltför missnöjd.`);
             gameOver = true;
             document.querySelectorAll("button").forEach(btn => {
                 if (btn.id !== "restart-button") {
@@ -309,6 +383,22 @@ function checkGroupSatisfaction() {
     }
     return false;
 }
+
+function updateFutureBudgetDisplay() {
+    let totalCost = 0;
+    for (const key of selectedPolicies) {
+        const policy = policies.find(p => p.key === key);
+        if (policy) {
+            totalCost += policy.cost;
+        }
+    }
+
+    const projectedBudget = getNextRoundBudget(budget);
+    const display = document.getElementById("future-budget-display");
+    display.textContent = `Förväntad budget nästa runda: ${projectedBudget.toLocaleString()} kr`;
+}
+
+
 
 function updateBudgetDisplay() {
     document.getElementById("budget-display").textContent = `Budget kvar: ${budget.toLocaleString()} kr`;
@@ -400,24 +490,41 @@ function togglePolicy(policyKey) {
             }
         }
     });
+    updateFutureBudgetDisplay();
 }
+
+function getNextRoundBudget(currentBudget) {
+    if (currentBudget >= initialBudget) return currentBudget;
+    if (currentBudget >= 75000) return currentBudget + 25000;
+    if (currentBudget >= 50000) return currentBudget + 15000;
+    if (currentBudget >= 25000) return currentBudget + 15000;
+    if (currentBudget >= 15000) return currentBudget + 10000;
+    return currentBudget + 7500;
+}
+
 
 function nextRoundBudget() {
     switch (true) {
         case (budget >= initialBudget):
             return;
         case (budget >= 75000):
-            budget += 25000; return;
+            budget += 25000; return budget;
         case (budget >= 50000):
-            budget += 15000; return;
+            budget += 15000; return budget;
         case (budget >= 25000):
-            budget += 15000; return;
+            budget += 15000; return budget;
         case (budget >= 15000):
-            budget += 10000; return;
+            budget += 10000; return budget;
         default:
-            budget += 7500; return;
+            budget += 7500; return budget;
     }
 }
+
+function updateRoundDisplay() {
+    const display = document.getElementById("round-display");
+    display.textContent = `Antal Rundor: ${roundNumber}`;
+}
+
 
 
 
@@ -452,14 +559,16 @@ function nextRound() {
         }
     }
 
-    // Kontrollera om någon grupp är missnöjd
-    if (checkGroupSatisfaction()) return;
+  
 
     updatePeopleSatisfaction();
     if (gameOver) return;
 
+
     renderStakeholders();
     renderPeople();
+    roundNumber++;
+    updateRoundDisplay();
     nextRoundBudget();
     updatePolicyButtons();
     updateBudgetDisplay();
@@ -495,7 +604,6 @@ function restartGame() {
     updatePolicyButtons(); // Viktigt – återställ beroenden korrekt
 }
 
-
 function updatePolicyButtons() {
     policies.forEach(policy => {
         const button = document.querySelector(`button[data-policy="${policy.key}"]`);
@@ -527,6 +635,8 @@ function showPolicyMessage(message) {
 
 
 function init() {
+    roundNumber = 1;
+    updateRoundDisplay();
     generatePeople();
     updatePeopleSatisfaction();
     updateBudgetDisplay();
@@ -542,10 +652,7 @@ function init() {
 
         const button = document.createElement("button");
         button.textContent = policy.name;
-
         button.setAttribute("data-policy", policy.key);
-
-
         button.onclick = () => togglePolicy(policy.key);
 
         wrapper.appendChild(button);
@@ -553,8 +660,16 @@ function init() {
         const tooltip = document.createElement("span");
         tooltip.className = "tooltiptext";
 
-        let html = `<strong>Kostnad:</strong> ${policy.cost.toLocaleString()} kr<br><br>`;
+        // Tooltip-innehåll med beskrivning överst
+        let html = "";
+
+        if (policy.description) {
+            html += `<em>${policy.description}</em><br><br>`;
+        }
+
+        html += `<strong>Kostnad:</strong> ${policy.cost.toLocaleString()} kr<br><br>`;
         html += "<strong>Omedelbara effekter:</strong><br>";
+
         for (const group in policy.effects) {
             const value = policy.effects[group];
             const symbol = getEffectSymbol(value);
@@ -582,7 +697,9 @@ function init() {
         wrapper.appendChild(tooltip);
         policyButtons.appendChild(wrapper);
         updatePolicyButtons();
+        updateFutureBudgetDisplay();
     });
 }
+
 
 window.onload = init;
