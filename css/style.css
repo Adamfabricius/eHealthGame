@@ -8,6 +8,23 @@ h1 {
   font-size: 24px;
 }
 
+.intro-box {
+  background-color: #ffffff;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  padding: 20px;
+  margin-bottom: 20px;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+  max-width: 700px;
+}
+
+.future-budget {
+  font-weight: normal;
+  color: #555;
+  margin-bottom: 10px;
+  font-style: italic;
+}
+
 button {
   margin: 5px;
   padding: 10px 15px;
@@ -37,6 +54,27 @@ button {
   display: inline-block;
   cursor: pointer;
 }
+
+.stakeholder-wrapper {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;  /* Avstånd mellan varje stakeholder */
+}
+
+.stakeholder-cell {
+  flex: 0 0 calc(33.33% - 10px);  /* Tvinga tre kolumner per rad */
+  background: #f8f8f8;
+  padding: 10px;
+  border-radius: 5px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  box-sizing: border-box;  /* Så padding och border påverkar inte bredden */
+}
+
+.stakeholder-cell strong {
+  display: block;
+  font-weight: bold;
+}
+
 
 .tooltip .tooltiptext {
   visibility: hidden;
@@ -89,5 +127,4 @@ button.selected {
     background-color: #d1e7dd;
     border: 2px solid #0f5132;
 }
-
 
