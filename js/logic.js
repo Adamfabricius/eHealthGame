@@ -50,19 +50,6 @@ const policies = [
         },
     },
     {
-        key: "chatbot",
-        name: "Gratis AI-chattbotar",
-        cost: 15000,
-        effects: {
-            "Äldre": -5,
-            "Teknikföretag": +10,
-            "Integritetsförespråkare": -10,
-            "Unga": +5,
-            "Digitala utvecklare": +5,
-        },
-        requires: ["bankid", "ehr"]
-    },
-    {
         key: "paper",
         name: "Garantera pappersbaserad vård",
         cost: 25000,
@@ -85,20 +72,6 @@ const policies = [
         }
     },
     {
-        key: "telemedicine",
-        name: "Telemedicin som standard",
-        cost: 20000,
-        effects: {
-            "Äldre": -10,
-            "Vårdpersonal": -5,
-            "Teknikföretag": +10,
-            "Unga": +10,
-            "Digitala utvecklare": +10
-        },
-        delayed: { "Fackföreningar": -5 },
-        requires: ["bankid"]
-    },
-    {
         key: "subsidy",
         name: "Subventionerade smarttelefoner",
         cost: 40000,
@@ -119,6 +92,33 @@ const policies = [
             "Sjukhusadministration": +5,
             "Traditionalister": -5
         }
+    },
+    {
+        key: "telemedicine",
+        name: "Telemedicin som standard",
+        cost: 20000,
+        effects: {
+            "Äldre": -10,
+            "Vårdpersonal": -5,
+            "Teknikföretag": +10,
+            "Unga": +10,
+            "Digitala utvecklare": +10
+        },
+        delayed: { "Fackföreningar": -5 },
+        requires: ["bankid"]
+    },
+    {
+        key: "chatbot",
+        name: "Gratis AI-chattbotar",
+        cost: 15000,
+        effects: {
+            "Äldre": -5,
+            "Teknikföretag": +10,
+            "Integritetsförespråkare": -10,
+            "Unga": +5,
+            "Digitala utvecklare": +5,
+        },
+        requires: ["bankid", "ehr"]
     },
     {
         key: "prevent",
@@ -181,7 +181,28 @@ const policies = [
             "Digitala utvecklare": -5
         },
         requires: ["paper"]
-    }
+    },
+    {
+        key: "interpreter-app",
+        name: "Personlig tolk via app",
+        cost: 35000,
+        effects: {
+            "Migranter": +15,
+            "Digitala utvecklare": +5,
+            "Integritetsförespråkare": -5
+        },
+        requires: ["language-support"]
+    }, {
+        key: "digital-intro",
+        name: "Digital introduktion för nyanlända",
+        cost: 25000,
+        effects: {
+            "Migranter": +10,
+            "Unga": -2,
+            "Fackföreningar": +2
+        },
+        requires: ["user-training"]
+    },
 ];
 
 function renderStakeholders() {
