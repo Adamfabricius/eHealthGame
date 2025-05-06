@@ -1,32 +1,56 @@
 <!DOCTYPE html>
 <html lang="sv">
+
 <head>
-  <meta charset="UTF-8">
-  <title>Ehälsa Simulationsspel</title>
-  <link rel="stylesheet" href="css/style.css">
+    <meta charset="UTF-8">
+    <title>Ehälsa Simulationsspel</title>
+    <link rel="stylesheet" href="css/style.css">
 </head>
+
 <body>
-  <h1>Ehälsa Simulationsspel </h1>
-  <p>Av: Adam Fabricius-Hansen och Caspar Alhadeff</p>
-  
-  <p>Välj policybeslut, hantera budget och håll alla nöjdhetsnivåer över 0!</p>
+    <h1>Ehälsa Simulationsspel </h1>
 
-  <div class="budget" id="budget-display"></div>
-  <div class="antal-rundor" id="round-display"></div>
+    <p>Av Adam Fabricius-Hansen och Caspar Alhadeff</p>
 
-  <div id="policy-buttons"></div>
-  <div id="policy-message" style="color: red; margin-top: 10px;"></div>
-  <button onclick="nextRound()">Nästa Runda</button>
-  <button onclick="restartGame()">Starta Om Spelet</button>
+    <p>Välj policybeslut, hantera budget och håll alla nöjdhetsnivåer över 0!</p>
+    <div class="intro-box">
+        <h2>Instruktioner</h2>
+        <p>
+            Du är nu ansvarig för Sveriges e-Hälsa. Välj policybeslut som påverkar olika intressenter och individer.
+            Håll alla nöjdhetsnivåer över 😫 – annars förlorar du!
+            Spelet fortsätter i rundor, och ditt mål är att hålla minst 10 individer nöjda så länge som möjligt.
+            Varje runda, får du mer pengar till din budget, denna summa varierar beroende på hur mycket pengar du har
+            kvar i slutet av varje runda,
+            <br>
+            Har du varit sparsam får du mer pengar, men risken finns att en grupp/individ blir alltför missnöjd!
+            <br>
+            Policier som till exempel "telemedicin som standard" kräver att "obligatoriskt BankID" redan är valt,
+            för att se vilka policier som krävs kan du hålla musen över respektive policy.
+        </p>
+        <p><strong>Lycka till!</strong></p>
+    </div>
 
-  <div class="status">
-    <h2>Status - Intressenter</h2>
-    <div id="stakeholders"></div>
 
-    <h2>Individer</h2>
-    <div id="people"></div>
+    <div class="budget" id="budget-display"></div>
 
-  <script src="js/logic.js"></script>
+    <div class="future-budget" id="future-budget-display"></div>
+
+    <div class="antal-rundor" id="round-display"></div>
+
+    <div id="policy-buttons"></div>
+    <div id="policy-message" style="color: red; margin-top: 10px;"></div>
+    <button onclick="nextRound()">Nästa Runda</button>
+    <button onclick="restartGame()">Starta Om Spelet</button>
+
+    <div class="status">
+        <h2>Status - Intressenter</h2>
+        <div id="stakeholders"></div>
+
+        <h2>Individer</h2>
+        <div id="people"></div>
+
+        <script src="js/logic.js"></script>
 
 </body>
+
 </html>
