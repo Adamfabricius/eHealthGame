@@ -16,29 +16,54 @@
     <div class="intro-box">
         <h2>Instruktioner</h2>
         <p>
-            Du är nu ansvarig för Sveriges e-Hälsa. Välj policybeslut som påverkar olika intressenter och individer.
-            Håll alla nöjdhetsnivåer över 😫 – annars förlorar du!
-            Spelet fortsätter i rundor, och ditt mål är att hålla minst 10 individer nöjda så länge som möjligt.
-            Varje runda, får du mer pengar till din budget, denna summa varierar beroende på hur mycket pengar du har
-            kvar i slutet av varje runda,
-            <br>
-            Har du varit sparsam får du mer pengar, men risken finns att en grupp/individ blir alltför missnöjd!
-            <br>
-            Policier som till exempel "telemedicin som standard" kräver att "obligatoriskt BankID" redan är valt,
-            för att se vilka policier som krävs kan du hålla musen över respektive policy.
+            <strong>Välkommen!</strong> Du är nu ansvarig för Sveriges digitala hälsosystem – eHälsa. Ditt uppdrag är
+            att införa olika policyer för att förbättra vården, samtidigt som du håller så många människor och
+            intressegrupper som möjligt nöjda.
         </p>
-        <p><strong>Lycka till!</strong></p>
+
+        <h3>🎯 Mål</h3>
+        <ul>
+            <li>Håll alla <strong>personers nöjdhetsnivå</strong> över 😫. Om någon blir alltför missnöjd är spelet
+                slut!</li>
+            <li>Ditt mål är att hålla minst 10 individer nöjda under så många rundor som möjligt.</li>
+        </ul>
+
+        <h3>🌀 Spelets gång</h3>
+        <ul>
+            <li>Spelet spelas i <strong>rundor</strong>. I varje runda kan du välja en eller flera policyer att införa.
+            </li>
+            <li>Klicka på <strong>"Nästa runda"</strong> när du är klar med dina val. Då får du se hur dina beslut
+                påverkar intressenter och individer.</li>
+            <li>Efter varje runda får du <strong>mer pengar</strong> till din budget. Ju mer du sparade förra rundan,
+                desto mer får du nästa!</li>
+        </ul>
+
+        <h3>💡 Viktigt att veta</h3>
+        <ul>
+            <li>Valda policyer förblir aktiva och kostar bara pengar <strong>en gång</strong>.</li>
+            <li>Du kan inte välja samma policy igen, men effekten består.</li>
+            <li>Vissa policyer är gråa och går inte att välja förrän <strong>andra policyer</strong> har valts först.
+                Håll muspekaren över en policy för att se vad som krävs.</li>
+            <li>Alla policyer påverkar olika <strong>intressentgrupper</strong> – vissa gynnas, andra missgynnas.</li>
+            <li>Varje person i spelet tillhör flera grupper. Deras nöjdhet beror på hur dessa grupper påverkas.</li>
+        </ul>
+
+        <h3>🧠 Tips</h3>
+        <ul>
+            <li>Planera långsiktigt – vissa negativa effekter kan balanseras av framtida beslut.</li>
+            <li>För musen över en policy för att läsa mer om dess effekter, kostnad och krav.</li>
+        </ul>
+
+        <p><strong>Lycka till – klarar du att hålla Sverige digitalt och alla nöjda?</strong></p>
     </div>
 
-
+    <div id="policy-buttons"></div>
+    <div id="policy-message" style="color: red; margin-top: 10px;"></div>
     <div class="budget" id="budget-display"></div>
 
     <div class="future-budget" id="future-budget-display"></div>
 
     <div class="antal-rundor" id="round-display"></div>
-
-    <div id="policy-buttons"></div>
-    <div id="policy-message" style="color: red; margin-top: 10px;"></div>
     <button onclick="nextRound()">Nästa Runda</button>
     <button onclick="restartGame()">Starta Om Spelet</button>
 
