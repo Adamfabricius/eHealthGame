@@ -51,7 +51,7 @@ const policies = [
             "Traditionalister": -10,
             "Integritetsförespråkare": +10,
         },
-        delayed:{ "Äldre": +5}
+        delayed: { "Äldre": +5 }
     },
     {
         key: "paper",
@@ -64,7 +64,7 @@ const policies = [
             "Teknikföretag": -10,
             "Unga": -7,
             "Digitala utvecklare": -5,
-            "Migranter" : + 10,
+            "Migranter": + 10,
             "Integritetsförespråkare": +5
         }
     },
@@ -103,7 +103,7 @@ const policies = [
             "Traditionalister": -5
         }
     },
-        {
+    {
         key: "secure",
         name: "Strikta Integritetsstandarder för Digitala Hälsosystem",
         description: "Denna policy säkerställer att alla digitala hälsosystem, inklusive elektroniska journalsystem och telemedicinlösningar, följer de strängaste integritets- och säkerhetsstandarderna.",
@@ -126,7 +126,7 @@ const policies = [
             "Unga": +10,
             "Digitala utvecklare": +10
         },
-        delayed: {"Fackföreningar": -5, "Äldre": +5},
+        delayed: { "Fackföreningar": -5, "Äldre": +5 },
         requires: ["bankid"]
     },
     {
@@ -181,7 +181,7 @@ const policies = [
             "Fackföreningar": +5,
             "Unga": -2
         },
-        delayed: {"traditionaliser": +5, "Äldre": +5},
+        delayed: { "Traditionalister": +5, "Äldre": +5 },
         requires: ["ehr", "chatbot"]
     },
     {
@@ -204,7 +204,7 @@ const policies = [
         description: "Personlig hjälp erbjuds till patienter som inte kan använda digitala tjänster.",
         cost: 35000,
         effects: {
-            "Ädre": +15,
+            "Äldre": +15,
             "Vårdpersonal": +10,
             "Digitala utvecklare": -5
         },
@@ -255,7 +255,7 @@ function renderStakeholders() {
 
         // Lägg till gruppens namn och symbol
         stakeholderDiv.innerHTML = `<strong>${group}:</strong> ${symbol}`;
-        
+
         // Lägg till cellen till wrappern
         wrapper.appendChild(stakeholderDiv);
         counter++;
@@ -558,8 +558,6 @@ function nextRound() {
         }
     }
 
-  
-
     updatePeopleSatisfaction();
     if (gameOver) return;
 
@@ -571,9 +569,13 @@ function nextRound() {
     nextRoundBudget();
     updatePolicyButtons();
     updateBudgetDisplay();
+    updateFutureBudgetDisplay();
 }
 
 function restartGame() {
+    roundNumber = 1;
+    updateRoundDisplay();
+
     budget = initialBudget;
     gameOver = false;
 
@@ -585,14 +587,16 @@ function restartGame() {
     selectedPolicies = [];
     stagedEffects = {};
     delayedEffects = [];
-
-    document.getElementById("actions").innerHTML = "";
-    document.querySelectorAll("button").forEach(btn => btn.disabled = false);
-
     updatePeopleSatisfaction();
     updateBudgetDisplay();
+    updateFutureBudgetDisplay();
     renderStakeholders();
     renderPeople();
+
+    // document.getElementById("actions").innerHTML = "";
+    document.querySelectorAll("button").forEach(btn => btn.disabled = false);
+
+
     document.querySelectorAll("button[data-policy]").forEach(btn => {
         btn.classList.remove("selected");
         const key = btn.getAttribute("data-policy");
@@ -608,7 +612,7 @@ function updatePolicyButtons() {
         const button = document.querySelector(`button[data-policy="${policy.key}"]`);
         if (!button) return;
 
-        if (selectedPolicies.includes(policy.key)) return; // redan vald – rör inte
+        if (selectedPolicies.includes(policy.key)) return;
 
         if (Array.isArray(policy.requires)) {
             const unmet = policy.requires.filter(req => !selectedPolicies.includes(req));
