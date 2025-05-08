@@ -530,6 +530,13 @@ function updateRoundDisplay() {
 function nextRound() {
     if (gameOver) return;
 
+    if (selectedPolicies.length === 0) {
+        for (const group in stakeholders) {
+            stakeholders[group] = Math.max(minSatisfaction, stakeholders[group] - 5);
+        }
+        showPolicyMessage("Inga val gjordes — alla grupper förlorar 5 nöjdhet.");
+    }
+
     // Tillämpa effekterna från de valda policies
     selectedPolicies.forEach(policyKey => {
         const policy = policies.find(p => p.key === policyKey);
