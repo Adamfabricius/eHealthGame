@@ -312,16 +312,26 @@ function getEffectSymbol(value) {
 
 function getSatisfactionSymbol(value) {
     switch (true) {
+        case (value >= 90):
+            return "🤩"; // Extremt nöjd
         case (value >= 80):
-            return "😄";
+            return "😄"; // Mycket nöjd
+        case (value >= 70):
+            return "😊"; // Nöjd
         case (value >= 60):
-            return "😊";
+            return "🙂"; // Ganska nöjd
+        case (value >= 50):
+            return "😐"; // Neutral
         case (value >= 40):
-            return "😐";
+            return "😕"; // Lite missnöjd
+        case (value >= 30):
+            return "☹️"; // Missnöjd
         case (value >= 20):
-            return "☹️";
+            return "😟"; // Väldigt missnöjd
+        case (value >= 10):
+            return "😡"; // Arg
         default:
-            return "😫";
+            return "🤬"; // Extremt missnöjd
     }
 }
 
