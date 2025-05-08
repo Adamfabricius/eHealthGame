@@ -530,9 +530,9 @@ function updateRoundDisplay() {
 function nextRound() {
     if (gameOver) return;
 
-        if (selectedPolicies.length === 0) {
+    if (selectedPolicies.length === 0) {
         for (const group in stakeholders) {
-            stakeholders[group] = Math.max(minSatisfaction, stakeholders[group] - 5);
+            stakeholders[group] = Math.max(minSatisfaction, stakeholders[group] - 10);
         }
         showPolicyMessage("Inga val gjordes — alla gruppers nöjdhet minskar med 👎👎.");
     }
