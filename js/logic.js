@@ -406,6 +406,8 @@ function updateBudgetDisplay() {
 function togglePolicy(policyKey) {
     if (gameOver) return;
 
+    selectedThisRound.add(policyKey);
+
     const index = selectedPolicies.indexOf(policyKey);
     const button = document.querySelector(`button[data-policy="${policyKey}"]`);
     const policy = policies.find(p => p.key === policyKey); // Hämta policyn
@@ -525,16 +527,21 @@ function updateRoundDisplay() {
 }
 
 
-
-
 function nextRound() {
     if (gameOver) return;
 
-    if (selectedPolicies.length === 0) {
+        if (selectedPolicies.length === 0) {
         for (const group in stakeholders) {
             stakeholders[group] = Math.max(minSatisfaction, stakeholders[group] - 5);
         }
-        showPolicyMessage("Inga val gjordes — alla grupper förlorar 5 nöjdhet.");
+        showPolicyMessage("Inga val gjordes — alla gruppers nöjdhet minskar med 👎👎.");
+    }
+
+    if (selectedThisRound.size === 0) {
+        for (const group in stakeholders) {
+            stakeholders[group] = Math.max(minSatisfaction, stakeholders[group] - 5);
+        }
+        showPolicyMessage("Inga val gjordes — alla gruppers nöjdhet minskar med 👎.");
     }
 
     // Tillämpa effekterna från de valda policies
@@ -571,6 +578,7 @@ function nextRound() {
 
     renderStakeholders();
     renderPeople();
+    selectedThisRound.clear();
     roundNumber++;
     updateRoundDisplay();
     nextRoundBudget();
@@ -582,6 +590,7 @@ function nextRound() {
 function restartGame() {
     roundNumber = 1;
     updateRoundDisplay();
+    selectedThisRound = new Set();
 
     budget = initialBudget;
     gameOver = false;
