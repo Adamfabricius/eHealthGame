@@ -1,29 +1,68 @@
-# Ehälsaspelet
+# 🎮 Ehälsaspelet
 
-## Har du spelat spelet och vill berätta vad du tycker, fyll gärna i detta [formulär]( https://docs.google.com/forms/d/e/1FAIpQLSdUF9ZjeDmGZ7syRjvVvbFkHMl4dlg0xcdPRc-lX2uXNcf52g/viewform?usp=header)
+> *Ett strategiskt beslutsfattarspel inom e-hälsa*
 
-Välkommen till **Ehälsaspelet**, ett strategispel där du som spelare tar på dig rollen som ledare och fattar beslut om olika politiska åtgärder för att påverka samhället. Målet är att hantera budgeten och tillfredsställa olika intressenter samtidigt som du navigerar genom de komplexa effekterna av dina beslut.
+---
 
-## Spelets Funktionalitet
+## 💬 Spelat spelet? Vi vill höra din åsikt!  
+👉 Fyll gärna i detta [**enkätformulär**](https://docs.google.com/forms/d/e/1FAIpQLSdUF9ZjeDmGZ7syRjvVvbFkHMl4dlg0xcdPRc-lX2uXNcf52g/viewform?usp=header)
 
-- **Budgethantering**: Din främsta resurs som du måste balansera mellan olika områden för att hålla spelet igång.
-- **Intressenter**: Du kommer att interagera med olika intressenter som har sina egna behov och krav. Dina beslut påverkar deras tillfredsställelse och lojalitet.
-- **Policys och Effekter**: Genom att fatta beslut om olika policyer kan du påverka spelets utveckling, både på kort och lång sikt.
-- **Spelomgång**: Målet är att fatta kloka beslut som håller budgeten balanserad och samtidigt tillfredsställer så många intressenter som möjligt.
+---
 
-## Hur Spelet Fungerar
+## 📘 Om spelet
 
-1. **Starta Om Spelet**: Du kan börja om spelet när som helst genom att klicka på knappen "Starta Om Spelet" för att återställa alla inställningar.
-2. **Policys**: Varje policy har sina egna effekter som påverkar både budgeten och intressenternas tillfredsställelse. Välj noga!
-3. **Intressenternas Reaktioner**: Håll koll på hur dina beslut påverkar de olika intressenterna i spelet och försök att balansera deras behov.
+**Ehälsaspelet** är ett interaktivt strategispel där du axlar rollen som beslutsfattare och navigerar i komplexa samhällsfrågor. Ditt mål?  
+⚖️ Balansera budgeten  
+🤝 Tillfredsställa olika intressenter  
+🧠 Fatta genomtänkta policybeslut som får konsekvenser
 
-## Komma igång
+---
 
-För att spela spelet:
-[Klicka här](https://adamfabricius.github.io/eHealthGame/)
+## 🧩 Spelets Funktionalitet
 
-## Teknisk Information
+- 💰 **Budgethantering**  
+  Balansera dina resurser mellan olika områden för att hålla spelet igång.
 
-Spelet är byggt med HTML, CSS och JavaScript, och kräver en modern webbläsare för att köra.
+- 🧑‍🤝‍🧑 **Intressenter**  
+  Möt grupper som *Unga*, *Äldre*, *Politiker*, m.fl. – alla med olika behov och prioriteringar.
 
-Av: Adam Fabricius-Hansen och Caspar Alhadeff, i samband med Högskoleingenjörsutbildning i medicinsk teknik på KTH
+- 📜 **Policys & Effekter**  
+  Dina beslut påverkar både kort- och långsiktiga utfall i spelet.
+
+- 🔁 **Spelomgångar**  
+  Fatta kloka beslut, lär av konsekvenserna och spela om för att testa nya strategier.
+
+---
+
+## 🕹️ Så här fungerar det
+
+1. 🔄 **Starta om spelet** när som helst via knappen *"Starta Om Spelet"*.
+2. 🧠 **Analysera policyer** – varje beslut påverkar budgeten och intressenternas nöjdhet.
+3. 📊 **Följ intressenternas reaktioner** och försök tillfredsställa så många som möjligt.
+
+---
+
+## 🚀 Kom igång
+
+🎯 Spela direkt här:  
+[👉 **Klicka för att starta spelet**](https://adamfabricius.github.io/eHealthGame/)
+
+---
+
+## 🔧 Teknisk Information
+
+🛠️ Spelet är utvecklat med:  
+- HTML  
+- CSS  
+- JavaScript  
+
+💡 Kräver en modern webbläsare (Chrome, Firefox, Edge eller Safari).
+
+---
+
+## 👥 Om oss
+
+Utvecklat av **Adam Fabricius-Hansen** och **Caspar Alhadeff**  
+📍 I samband med Högskoleingenjörsutbildningen i Medicinsk Teknik vid **KTH**.
+
+---
