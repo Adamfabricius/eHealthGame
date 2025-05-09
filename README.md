@@ -24,7 +24,7 @@
   Balansera dina resurser mellan olika områden för att hålla spelet igång.
 
 - 🧑‍🤝‍🧑 **Intressenter**  
-  Möt grupper som *Unga*, *Äldre*, *Politiker*, m.fl. – alla med olika behov och prioriteringar.
+  Möt grupper som *Unga*, *Äldre*, *Vårdpersonal*, m.fl. – alla med olika behov och prioriteringar.
 
 - 📜 **Policys & Effekter**  
   Dina beslut påverkar både kort- och långsiktiga utfall i spelet.
